@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { isLoading, status, data: posts, suspense } = useListPosts()
+watchEffect(() => console.log('list data', posts))
 
 onServerPrefetch(async () => { await suspense() })
 </script>

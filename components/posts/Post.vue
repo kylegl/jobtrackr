@@ -8,12 +8,12 @@ const { title, content, createdAt, id } = defineProps<{
 
 let deleted = $ref(false)
 
-const deletePost = useDeletePost()
-function handleDeletePost() {
-  deleted = true
-  if (typeof id === 'number')
-    deletePost.mutate({ id })
-}
+// const deletePost = useDeletePost()
+// function handleDeletePost() {
+//   deleted = true
+//   if (typeof id === 'number')
+//     deletePost.mutate({ id })
+// }
 
 const timeAgo = useTimeAgo(createdAt)
 </script>
@@ -33,7 +33,7 @@ const timeAgo = useTimeAgo(createdAt)
         </div>
         <div>•</div>
         <div>{{ timeAgo }}</div>
-        <button ml-auto @click="handleDeletePost">
+        <button ml-auto >
           <Icon i-carbon:trash-can trsh-btn />
         </button>
       </div>

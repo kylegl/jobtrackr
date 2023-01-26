@@ -10,6 +10,36 @@ type CreatePostOutput = RouterOutput['post']['add']
 type DeletePostOutput = RouterOutput['post']['delete']
 type ListPostsOutput = RouterOutput['post']['list']
 
+export function testAddPost() {
+  const { $client } = useNuxtApp()
+  const queryClient = useQueryClient()
+
+  const { mutateAsync } = $client.post.add.useMutation({
+    onMutate: async (input) => {
+      console.log('onMutate fn')
+      await useQueryClient().cancelQueries(['post.list'])
+      const previousPosts = (['post.list'])
+      const newPost = {
+        id: '__temp__id',
+        createdAt: new Date(),
+        ...input,
+      }
+
+      queryClient.setQueryData(['post.list'],
+        (old) => {
+          return old ? [newPost, ...old] : undefined
+        },
+      )
+
+      return { previousPosts }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['post.list'] }),
+  })
+  return {
+    mutateAsync,
+  }
+}
+
 export function useAddPost() {
   const vueQueryClient = useQueryClient()
   const { $client } = useNuxtApp()
@@ -41,40 +71,36 @@ export function useAddPost() {
 export function useListPosts() {
   const { $client } = useNuxtApp()
 
-  const queryFn = async () => {
-    const data = await $client.post.list.query()
-    return data
-  }
-  return useQuery({ queryKey: ['post', 'list'], queryFn })
+  return $client.post.list.useQuery()
 }
 
-export function useDeletePost() {
-  const { $client } = useNuxtApp()
-  const vueQueryClient = useQueryClient()
+// export function useDeletePost() {
+//   const { $client } = useNuxtApp()
+//   const vueQueryClient = useQueryClient()
 
-  const mutationFn = async (input: DeletePostInput) => {
-    return useAsyncData<DeletePostOutput, ErrorOutput>
-    (
-      () => $client.post.delete.mutate(input),
-    )
-  }
+//   const mutationFn = async (input: DeletePostInput) => {
+//     return useAsyncData<DeletePostOutput, ErrorOutput>
+//     (
+//       () => $client.post.delete.mutate(input),
+//     )
+//   }
 
-  return useMutation({
-    mutationFn,
-    onMutate: async ({ id }) => {
-      await vueQueryClient.cancelQueries(['post', 'list'])
-      const previousPosts = vueQueryClient.getQueryData(['post', 'list'])
+//   return useMutation({
+//     mutationFn,
+//     onMutate: async ({ id }) => {
+//       await vueQueryClient.cancelQueries(['post', 'list'])
+//       const previousPosts = vueQueryClient.getQueryData(['post', 'list'])
 
-      vueQueryClient.setQueryData(['post', 'list'], (old) => {
-        return old.filter(post => post.id !== id)
-      })
+//       vueQueryClient.setQueryData(['post', 'list'], (old) => {
+//         return old.filter(post => post.id !== id)
+//       })
 
-      return { previousPosts }
-    },
-    onError: (err, { id }, context) => {
-      vueQueryClient.setQueryData(['post', 'list'], context?.previousPosts)
-      return err
-    },
-    onSettled: () => vueQueryClient.invalidateQueries({ queryKey: ['post', 'list'] }),
-  })
-}
+//       return { previousPosts }
+//     },
+//     onError: (err, { id }, context) => {
+//       vueQueryClient.setQueryData(['post', 'list'], context?.previousPosts)
+//       return err
+//     },
+//     onSettled: () => vueQueryClient.invalidateQueries({ queryKey: ['post', 'list'] }),
+//   })
+// }

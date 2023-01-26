@@ -1,5 +1,6 @@
-import { createTRPCNuxtClient, httpBatchLink } from 'trpc-nuxt/client'
 import superjson from 'superjson'
+import { loggerLink } from '@trpc/client'
+import { createTRPCNuxtClient, httpBatchLink } from 'trpc-nuxt/client-vue-query'
 import type { AppRouter } from '~~/server/trpc/router/appRouter'
 
 export default defineNuxtPlugin(() => {
@@ -7,6 +8,9 @@ export default defineNuxtPlugin(() => {
   const client = createTRPCNuxtClient<AppRouter>({
     transformer: superjson,
     links: [
+      loggerLink({
+        enabled: opts => process.env.NODE_ENV === 'development' || (opts.direction === 'down' && opts.result instanceof Error),
+      }),
       httpBatchLink({
         url,
       }),

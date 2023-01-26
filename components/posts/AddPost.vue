@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { error, mutate, reset, isSuccess } = useAddPost()
+const { mutateAsync } = testAddPost()
 const postTitle = $ref<string>()
 let postContent = $ref<string>()
 const unfocus = $ref(false)
@@ -8,7 +8,7 @@ async function submitPost() {
   if (typeof postTitle !== 'string' && !postContent)
     return
 
-  mutate({ title: postTitle, content: postContent })
+  await mutateAsync({ title: postTitle, content: postContent })
   postContent = ''
 }
 </script>
