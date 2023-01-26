@@ -22,7 +22,7 @@ specifiers:
   pinia: ^2.0.23
   prisma: ^4.9.0
   superjson: ^1.12.2
-  trpc-nuxt: ^0.5.0
+  trpc-nuxt: github:ozum/trpc-nuxt
   typescript: ^4.9.3
   zod: ^3.20.2
 
@@ -33,7 +33,7 @@ dependencies:
   '@trpc/server': 10.9.0
   devalue: 4.2.2
   superjson: 1.12.2
-  trpc-nuxt: 0.5.0_2zpqbmooshoeqfe2ml35ze43ai
+  trpc-nuxt: github.com/ozum/trpc-nuxt/1a52a62f878c6beeb4dc66c35376212838e671a5_bkddaycdfohpxvpor7lk5aktaa
   zod: 3.20.2
 
 devDependencies:
@@ -12765,21 +12765,6 @@ packages:
     resolution: {integrity: sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==}
     dev: true
 
-  /trpc-nuxt/0.5.0_2zpqbmooshoeqfe2ml35ze43ai:
-    resolution: {integrity: sha512-PZpmwc2QYkC1CWxGo3brFwou88zoP6cB9+GmlIffJJLKCmTY7XzIfarNxSbCocdeymJjMpcL/94t9kJm85/eTQ==}
-    engines: {node: ^16.13.0 || ^18.12.0}
-    peerDependencies:
-      '@trpc/client': ^10.8.0
-      '@trpc/server': ^10.8.0
-    dependencies:
-      '@trpc/client': 10.9.0_@trpc+server@10.9.0
-      '@trpc/server': 10.9.0
-      h3: 1.0.2
-      ofetch: 1.0.0
-      ohash: 1.0.0
-      ufo: 1.0.1
-    dev: false
-
   /ts-node/10.9.1_typescript@4.9.3:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
@@ -13937,4 +13922,24 @@ packages:
 
   /zod/3.20.2:
     resolution: {integrity: sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==}
+    dev: false
+
+  github.com/ozum/trpc-nuxt/1a52a62f878c6beeb4dc66c35376212838e671a5_bkddaycdfohpxvpor7lk5aktaa:
+    resolution: {tarball: https://codeload.github.com/ozum/trpc-nuxt/tar.gz/1a52a62f878c6beeb4dc66c35376212838e671a5}
+    id: github.com/ozum/trpc-nuxt/1a52a62f878c6beeb4dc66c35376212838e671a5
+    name: trpc-nuxt
+    version: 0.5.0
+    engines: {node: ^16.13.0 || ^18.12.0}
+    peerDependencies:
+      '@tanstack/vue-query': ^4.22.0
+      '@trpc/client': ^10.8.0
+      '@trpc/server': ^10.8.0
+    dependencies:
+      '@tanstack/vue-query': 4.22.0
+      '@trpc/client': 10.9.0_@trpc+server@10.9.0
+      '@trpc/server': 10.9.0
+      h3: 1.0.2
+      ofetch: 1.0.0
+      ohash: 1.0.0
+      ufo: 1.0.1
     dev: false
