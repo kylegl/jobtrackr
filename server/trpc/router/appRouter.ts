@@ -1,6 +1,7 @@
 import {
   bidRouter,
   bidStatusRouter,
+  companyRouter,
   contactRouter,
   employeeRouter,
   jobRouter,
@@ -18,6 +19,7 @@ import { router } from '~~/server/trpc/trpc'
 export const appRouter = router({
   user: userRouter,
   employee: employeeRouter,
+  company: companyRouter,
   contact: contactRouter,
   property: propertyRouter,
   job: jobRouter,
