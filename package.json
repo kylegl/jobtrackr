@@ -6,7 +6,8 @@
     "start": "node .output/server/index.mjs",
     "lint": "eslint .",
     "postinstall": "nuxi prepare",
-    "generate": "nuxi generate"
+    "generate": "nuxi generate",
+    "p": "prisma format && prisma migrate dev --name init && prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^4.9.0",

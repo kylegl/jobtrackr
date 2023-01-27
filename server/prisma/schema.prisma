@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "sqlite"
-  url               = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -14,16 +14,24 @@ model User {
 }
 
 model employee {
-  id          String     @id @default(cuid())
-  name        String
-  phone       String?
-  email       String?
-  position    String
-  isEmployed  Boolean
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  workOrder   workOrder? @relation(fields: [workOrderId], references: [id])
-  workOrderId String?
+  id         String            @id @default(cuid())
+  name       String
+  phone      String?
+  email      String?
+  isEmployed Boolean
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  workorders workOrder[]
+  position   employeePosition? @relation(fields: [positionId], references: [id])
+  positionId String?
+}
+
+model employeePosition {
+  id        String     @id @default(cuid())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  employee  employee[]
 }
 
 model company {
@@ -40,26 +48,24 @@ model company {
 }
 
 model contact {
-  id          String     @id @default(cuid())
-  name        String
-  phone       String?
-  email       String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  companyId   String?
-  company     company?   @relation(fields: [companyId], references: [id])
-  employeeId  String?
-  jobs        job[]
-  bids        bid[]
-  workOrder   workOrder? @relation(fields: [workOrderId], references: [id])
-  workOrderId String?
+  id         String      @id @default(cuid())
+  name       String
+  phone      String?
+  email      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  companyId  String?
+  company    company?    @relation(fields: [companyId], references: [id])
+  employeeId String?
+  jobs       job[]
+  bids       bid[]
+  workorders workOrder[]
 }
 
 model property {
   id        String   @id @default(cuid())
   address   String
   gateCode  String?
-  email     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   jobs      job[]
@@ -67,57 +73,79 @@ model property {
 }
 
 model job {
-  id             String      @id @default(cuid())
-  name           String
-  number         Int?
-  prevailingWage Boolean
-  isHourly       Boolean
-  type           String?
-  status         String
-  contractTotal  Int?
-  invoicedTotal  Int?
-  paidTotal      Int?
-  hours          Int?
-  startAt        DateTime?
-  closedAt       DateTime?
-  notes          String?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  company        company?    @relation(fields: [companyId], references: [id])
-  companyId      String?
-  contact        contact?    @relation(fields: [contactId], references: [id])
-  contactId      String?
-  property       property?   @relation(fields: [propertyId], references: [id])
-  propertyId     String?
-  bids           bid[]
-  workOrders     workOrder[]
+  id               String      @id @default(cuid())
+  name             String
+  number           Int?
+  isPrevailingWage Boolean
+  isHourly         Boolean
+  contractTotal    Int?
+  invoicedTotal    Int?
+  paidTotal        Int?
+  hours            Int?
+  startAt          DateTime?
+  dueAt            DateTime?
+  closedAt         DateTime?
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  type             jobType?    @relation(fields: [typeId], references: [id])
+  typeId           String?
+  status           jobStatus?  @relation(fields: [statusId], references: [id])
+  statusId         String?
+  company          company?    @relation(fields: [companyId], references: [id])
+  companyId        String?
+  contacts         contact[]
+  property         property?   @relation(fields: [propertyId], references: [id])
+  propertyId       String?
+  bids             bid[]
+  workOrders       workOrder[]
+}
+
+model jobStatus {
+  id   String @id @default(cuid())
+  name String
+  jobs job[]
+}
+
+model jobType {
+  id   String @id @default(cuid())
+  name String
+  jobs job[]
+  bids bid[]
 }
 
 model bid {
-  id             String    @id @default(cuid())
-  name           String?
-  number         Int?
-  prevailingWage Boolean?
-  status         String
-  isHourly       Boolean
-  type           String?
-  total          Int?
-  sentAt         DateTime?
-  closedAt       DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  company        company?  @relation(fields: [companyId], references: [id])
-  companyId      String?
-  contact        contact?  @relation(fields: [contactId], references: [id])
-  contactId      String?
-  property       property? @relation(fields: [propertyId], references: [id])
-  propertyId     String?
-  job            job?      @relation(fields: [jobId], references: [id])
-  jobId          String?
+  id               String     @id @default(cuid())
+  name             String?
+  number           Int?
+  isPrevailingWage Boolean?
+  isHourly         Boolean
+  hours            Int?
+  total            Int?
+  sentAt           DateTime?
+  dueAt            DateTime?
+  closedAt         DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  property         property?  @relation(fields: [propertyId], references: [id])
+  propertyId       String?
+  type             jobType?   @relation(fields: [typeId], references: [id])
+  typeId           String?
+  status           bidStatus? @relation(fields: [statusId], references: [id])
+  statusId         String?
+  companies        company[]
+  contacts         contact[]
+  jobs             job[]
+}
+
+model bidStatus {
+  id   String @id @default(cuid())
+  name String
+  bids bid[]
 }
 
 model task {
-  id          String     @id @default(cuid())
+  id          String      @id @default(cuid())
   description String?
   materials   String?
   hours       Int?
@@ -125,29 +153,44 @@ model task {
   startAt     DateTime?
   dueAt       DateTime?
   closedAt    DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  workOrder   workOrder? @relation(fields: [workOrderId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  status      taskStatus? @relation(fields: [statusId], references: [id])
+  statusId    String?
+  workOrder   workOrder?  @relation(fields: [workOrderId], references: [id])
   workOrderId String?
 }
 
+model taskStatus {
+  id    String @id @default(cuid())
+  name  String
+  tasks task[]
+}
+
 model workOrder {
-  id          String     @id @default(cuid())
+  id          String           @id @default(cuid())
   number      Int
   description String?
-  status      String
   isHourly    Boolean
-  type        String?
+  hours       Int?
   startAt     DateTime?
   dueAt       DateTime?
   closedAt    DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  job         job?       @relation(fields: [jobId], references: [id])
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  job         job?             @relation(fields: [jobId], references: [id])
   jobId       String?
-  company     company?   @relation(fields: [companyId], references: [id])
+  company     company?         @relation(fields: [companyId], references: [id])
   companyId   String?
+  status      workOrderStatus? @relation(fields: [statusId], references: [id])
+  statusId    String?
   contacts    contact[]
   employees   employee[]
   tasks       task[]
+}
+
+model workOrderStatus {
+  id         String      @id @default(cuid())
+  name       String
+  workOrders workOrder[]
 }
