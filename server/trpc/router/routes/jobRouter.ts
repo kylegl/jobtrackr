@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import type { CreateContactInput } from './contactRouter'
+import type { CreateContactInput } from '~~/server/trpc/router/routes/contactRouter'
 import { createOrAddContactInputSchema } from '~~/server/trpc/router/routes/contactRouter'
 import type { IdInput } from '~~/server/schemas'
-import { datetimeSchema, idSchema } from '~~/server/schemas'
+import { datetimeSchema, idSchema, jobStatusSchema } from '~~/server/schemas'
 import { prisma } from '~~/server/prisma/prisma'
 import { publicProcedure, router } from '~~/server/trpc/trpc'
 
@@ -25,7 +25,7 @@ export const createJobInputSchema = z.object({
   closedAt: datetimeSchema.optional(),
   notes: z.string().optional(),
   typeId: idSchema.optional(),
-  statusId: idSchema.optional(),
+  status: jobStatusSchema,
   contacts: z.array(createOrAddContactInputSchema).optional(),
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
@@ -50,7 +50,7 @@ export const updateJobInputSchema = z.object({
   closedAt: datetimeSchema.optional(),
   notes: z.string().optional(),
   typeId: idSchema.optional(),
-  statusId: idSchema.optional(),
+  status: jobStatusSchema.optional(),
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
   contacts: z.array(createOrAddContactInputSchema).optional(),
@@ -65,10 +65,10 @@ export const GetByIdJobInputSchema = z.object({
 })
 export type GetByIdJobInput = z.infer<typeof GetByIdJobInputSchema>
 
-export const deleteJobInputShape = z.object({
+export const deleteJobInputSchema = z.object({
   id: idSchema,
 })
-export type DeleteJobInput = z.infer<typeof deleteJobInputShape>
+export type DeleteJobInput = z.infer<typeof deleteJobInputSchema>
 
 export const JobListInputSchema = z.object({
   id: idSchema.optional(),
@@ -96,7 +96,7 @@ export const jobRouter = router({
         closedAt,
         notes,
         typeId,
-        statusId,
+        status,
         companyId,
         propertyId,
         contacts,
@@ -118,7 +118,7 @@ export const jobRouter = router({
           closedAt,
           notes,
           typeId,
-          statusId,
+          status,
           companyId,
           propertyId,
           contacts: {
@@ -146,7 +146,7 @@ export const jobRouter = router({
       return job
     }),
   delete: publicProcedure
-    .input(deleteJobInputShape)
+    .input(deleteJobInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.job.delete({ where: { id } })
@@ -181,7 +181,7 @@ export const jobRouter = router({
         closedAt,
         notes,
         typeId,
-        statusId,
+        status,
         companyId,
         propertyId,
       } = input
@@ -201,7 +201,7 @@ export const jobRouter = router({
           closedAt,
           notes,
           typeId,
-          statusId,
+          status,
           companyId,
           propertyId,
         },

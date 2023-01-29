@@ -5,10 +5,10 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createJobTypeInputShape = z.object({
+export const createJobTypeInputSchema = z.object({
   name: z.string(),
 })
-export type CreateJobTypeInput = z.infer<typeof createJobTypeInputShape>
+export type CreateJobTypeInput = z.infer<typeof createJobTypeInputSchema>
 
 export const updateJobTypeInputSchema = z.object({
   id: idSchema,
@@ -17,11 +17,11 @@ export const updateJobTypeInputSchema = z.object({
 
 export type UpdateJobTypeInput = z.infer<typeof updateJobTypeInputSchema>
 
-export const GetByIdJobTypeInputShape = idInputSchema
-export type GetByIdJobTypeInput = z.infer<typeof GetByIdJobTypeInputShape>
+export const GetByIdJobTypeInputSchema = idInputSchema
+export type GetByIdJobTypeInput = z.infer<typeof GetByIdJobTypeInputSchema>
 
-export const deleteJobTypeInputShape = idInputSchema
-export type DeleteJobTypeInput = z.infer<typeof deleteJobTypeInputShape>
+export const deleteJobTypeInputSchema = idInputSchema
+export type DeleteJobTypeInput = z.infer<typeof deleteJobTypeInputSchema>
 
 export const JobTypeListInputSchema = z.object({
   id: idSchema.optional(),
@@ -32,7 +32,7 @@ export const JobTypeListInputSchema = z.object({
 
 export const jobTypeRouter = router({
   add: publicProcedure
-    .input(createJobTypeInputShape)
+    .input(createJobTypeInputSchema)
     .mutation(async ({ input }) => {
       const jobType = await prisma.jobType.create({
         data: input,
@@ -41,7 +41,7 @@ export const jobTypeRouter = router({
       return jobType
     }),
   delete: publicProcedure
-    .input(deleteJobTypeInputShape)
+    .input(deleteJobTypeInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.jobType.delete({ where: { id } })
@@ -49,7 +49,7 @@ export const jobTypeRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdJobTypeInputShape)
+    .input(GetByIdJobTypeInputSchema)
     .query(async ({ input }) => await prisma.jobType.findUnique({ where: input })),
   list: publicProcedure
     .input(JobTypeListInputSchema)

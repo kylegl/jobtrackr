@@ -14,21 +14,21 @@ model User {
 }
 
 model employee {
-  id         String            @id @default(cuid())
+  id         String      @id @default(cuid())
   name       String
   phone      String?
   email      String?
   isEmployed Boolean
-  createdAt  DateTime          @default(now())
-  updatedAt  DateTime          @updatedAt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
   workorders workOrder[]
-  position   employeePosition? @relation(fields: [positionId], references: [id])
-  positionId String?
+  title      jobTitle    @relation(fields: [titleId], references: [id])
+  titleId    String
 }
 
-model employeePosition {
+model jobTitle {
   id        String     @id @default(cuid())
-  name      String
+  title     String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   employee  employee[]
@@ -36,7 +36,7 @@ model employeePosition {
 
 model company {
   id        String      @id @default(cuid())
-  name      String
+  name      String      @unique
   phone     String?
   email     String?
   createdAt DateTime    @default(now())
@@ -54,9 +54,8 @@ model contact {
   email      String?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-  companyId  String?
   company    company?    @relation(fields: [companyId], references: [id])
-  employeeId String?
+  companyId  String?
   jobs       job[]
   bids       bid[]
   workorders workOrder[]
@@ -74,8 +73,8 @@ model property {
 
 model job {
   id               String      @id @default(cuid())
-  name             String
-  number           Int?
+  name             String      @unique
+  number           Int?        @unique
   isPrevailingWage Boolean
   isHourly         Boolean
   contractTotal    Int?
@@ -90,8 +89,7 @@ model job {
   updatedAt        DateTime    @updatedAt
   type             jobType?    @relation(fields: [typeId], references: [id])
   typeId           String?
-  status           jobStatus?  @relation(fields: [statusId], references: [id])
-  statusId         String?
+  status           String
   company          company?    @relation(fields: [companyId], references: [id])
   companyId        String?
   contacts         contact[]
@@ -101,23 +99,17 @@ model job {
   workOrders       workOrder[]
 }
 
-model jobStatus {
-  id   String @id @default(cuid())
-  name String
-  jobs job[]
-}
-
 model jobType {
   id   String @id @default(cuid())
-  name String
+  name String @unique
   jobs job[]
   bids bid[]
 }
 
 model bid {
-  id               String     @id @default(cuid())
-  name             String?
-  number           Int?
+  id               String    @id @default(cuid())
+  name             String?   @unique
+  number           Int?      @unique
   isPrevailingWage Boolean?
   isHourly         Boolean
   hours            Int?
@@ -125,27 +117,20 @@ model bid {
   sentAt           DateTime?
   dueAt            DateTime?
   closedAt         DateTime?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  property         property?  @relation(fields: [propertyId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  property         property? @relation(fields: [propertyId], references: [id])
   propertyId       String?
-  type             jobType?   @relation(fields: [typeId], references: [id])
+  type             jobType?  @relation(fields: [typeId], references: [id])
   typeId           String?
-  status           bidStatus? @relation(fields: [statusId], references: [id])
-  statusId         String?
+  status           String
   companies        company[]
   contacts         contact[]
   jobs             job[]
 }
 
-model bidStatus {
-  id   String @id @default(cuid())
-  name String
-  bids bid[]
-}
-
 model task {
-  id          String      @id @default(cuid())
+  id          String     @id @default(cuid())
   description String?
   materials   String?
   hours       Int?
@@ -153,44 +138,30 @@ model task {
   startAt     DateTime?
   dueAt       DateTime?
   closedAt    DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  status      taskStatus? @relation(fields: [statusId], references: [id])
-  statusId    String?
-  workOrder   workOrder?  @relation(fields: [workOrderId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  status      String
+  workOrder   workOrder? @relation(fields: [workOrderId], references: [id])
   workOrderId String?
 }
 
-model taskStatus {
-  id    String @id @default(cuid())
-  name  String
-  tasks task[]
-}
-
 model workOrder {
-  id          String           @id @default(cuid())
-  number      Int
+  id          String     @id @default(cuid())
+  number      Int        @unique
   description String?
   isHourly    Boolean
   hours       Int?
   startAt     DateTime?
   dueAt       DateTime?
   closedAt    DateTime?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  job         job?             @relation(fields: [jobId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  job         job?       @relation(fields: [jobId], references: [id])
   jobId       String?
-  company     company?         @relation(fields: [companyId], references: [id])
+  company     company?   @relation(fields: [companyId], references: [id])
   companyId   String?
-  status      workOrderStatus? @relation(fields: [statusId], references: [id])
-  statusId    String?
+  status      String
   contacts    contact[]
   employees   employee[]
   tasks       task[]
-}
-
-model workOrderStatus {
-  id         String      @id @default(cuid())
-  name       String
-  workOrders workOrder[]
 }
