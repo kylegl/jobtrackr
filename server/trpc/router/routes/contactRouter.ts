@@ -1,5 +1,4 @@
 import { z } from 'zod'
-// import type { contactWhereUniqueInput } from '@prisma/client'
 import type { Prisma } from '@prisma/client'
 import type { IdInput } from '~~/server/schemas'
 import { idInputSchema, idSchema } from '~~/server/schemas'
@@ -13,16 +12,14 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createContactInputShape = z.object({
+export const createContactInputSchema = z.object({
   name: z.string(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
   companyId: idSchema.optional(),
   jobId: idSchema.optional(),
-  bidId: idSchema.optional(),
-  workOrderId: idSchema.optional(),
 })
-export type CreateContactInput = z.infer<typeof createContactInputShape>
+export type CreateContactInput = z.infer<typeof createContactInputSchema>
 
 export const updateContactInputSchema = z.object({
   id: idSchema,
@@ -31,23 +28,21 @@ export const updateContactInputSchema = z.object({
   email: z.string().email().optional(),
   companyId: idSchema.optional(),
   jobId: idSchema.optional(),
-  bidId: idSchema.optional(),
-  workOrderId: idSchema.optional(),
 })
 
 export type UpdateContactInput = z.infer<typeof updateContactInputSchema>
 
-export const createOrAddContactInputSchema = createContactInputShape.or(idInputSchema)
+export const createOrAddContactInputSchema = createContactInputSchema.or(idInputSchema)
 export type CreateOrAddContactInput = z.infer<typeof createOrAddContactInputSchema>
 export type CreateOrAddContactInputConditional<
   T extends CreateOrAddContactInput | IdInput,
 > = T extends CreateContactInput ? CreateContactInput : IdInput
 
-export const GetByIdContactInputShape = idInputSchema
-export type GetByIdContactInput = z.infer<typeof GetByIdContactInputShape>
+export const GetByIdContactInputSchema = idInputSchema
+export type GetByIdContactInput = z.infer<typeof GetByIdContactInputSchema>
 
-export const deleteContactInputShape = idInputSchema
-export type DeleteContactInput = z.infer<typeof deleteContactInputShape>
+export const deleteContactInputSchema = idInputSchema
+export type DeleteContactInput = z.infer<typeof deleteContactInputSchema>
 
 export const ContactListInputSchema = z.object({
   id: idSchema.optional(),
@@ -58,7 +53,7 @@ export const ContactListInputSchema = z.object({
 
 export const contactRouter = router({
   add: publicProcedure
-    .input(createContactInputShape)
+    .input(createContactInputSchema)
     .mutation(async ({ input }) => {
       const contact = await prisma.contact.create({
         data: input,
@@ -67,7 +62,7 @@ export const contactRouter = router({
       return contact
     }),
   delete: publicProcedure
-    .input(deleteContactInputShape)
+    .input(deleteContactInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.contact.delete({ where: { id } })
@@ -75,7 +70,7 @@ export const contactRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdContactInputShape)
+    .input(GetByIdContactInputSchema)
     .query(async ({ input }) => await prisma.contact.findUnique({ where: input })),
   list: publicProcedure
     .input(ContactListInputSchema)

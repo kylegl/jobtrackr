@@ -2,26 +2,26 @@ import { z } from 'zod'
 import { publicProcedure, router } from '~~/server/trpc/trpc'
 import { prisma } from '~~/server/prisma/prisma'
 
-const getUserInputShape = z.object({
+const getUserInputSchema = z.object({
   name: z.string().optional(),
 })
-export type GetUserInputShape = z.infer<typeof getUserInputShape>
+export type GetUserInputSchema = z.infer<typeof getUserInputSchema>
 
-export const createUserInputShape = z.object({ username: z.string() })
-export type CreateUserInputShape = z.infer<typeof createUserInputShape>
+export const createUserInputSchema = z.object({ username: z.string() })
+export type CreateUserInputSchema = z.infer<typeof createUserInputSchema>
 
-export const deleteUserInputShape = z.string()
-export type DeleteUserInputShape = z.infer<typeof deleteUserInputShape>
+export const deleteUserInputSchema = z.string()
+export type DeleteUserInputSchema = z.infer<typeof deleteUserInputSchema>
 
 export const userRouter = router({
   getById: publicProcedure
-    .input(getUserInputShape)
+    .input(getUserInputSchema)
     .query(({ input }) => ({
       username: input?.name ?? 'anonymous',
       isUser: !!input?.name,
     })),
   add: publicProcedure
-    .input(createUserInputShape)
+    .input(createUserInputSchema)
     .mutation(async ({ input }) => {
       const user = await prisma.user.create({
         data: input,
@@ -35,7 +35,7 @@ export const userRouter = router({
       return users
     }),
   delete: publicProcedure
-    .input(deleteUserInputShape)
+    .input(deleteUserInputSchema)
     .mutation(async ({ input }) => {
       const res = await prisma.user.delete({ where: { username: input } })
 

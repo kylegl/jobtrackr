@@ -5,12 +5,12 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region(collapsed) Router Schemas
 
-export const createCompanyInputShape = z.object({
+export const createCompanyInputSchema = z.object({
   name: z.string(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
 })
-export type CreateCompanyInput = z.infer<typeof createCompanyInputShape>
+export type CreateCompanyInput = z.infer<typeof createCompanyInputSchema>
 
 export const updateCompanyInputSchema = z.object({
   id: idSchema,
@@ -20,15 +20,15 @@ export const updateCompanyInputSchema = z.object({
 })
 export type UpdateCompanyInput = z.infer<typeof updateCompanyInputSchema>
 
-export const GetByIdCompanyInputShape = z.object({
+export const GetByIdCompanyInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdCompanyInput = z.infer<typeof GetByIdCompanyInputShape>
+export type GetByIdCompanyInput = z.infer<typeof GetByIdCompanyInputSchema>
 
-export const deleteCompanyInputShape = z.object({
+export const deleteCompanyInputSchema = z.object({
   id: idSchema,
 })
-export type DeleteCompanyInput = z.infer<typeof deleteCompanyInputShape>
+export type DeleteCompanyInput = z.infer<typeof deleteCompanyInputSchema>
 
 export const companyListInputSchema = z.object({
   id: idSchema.optional(),
@@ -39,7 +39,7 @@ export const companyListInputSchema = z.object({
 
 export const companyRouter = router({
   add: publicProcedure
-    .input(createCompanyInputShape)
+    .input(createCompanyInputSchema)
     .mutation(async ({ input }) => {
       const company = await prisma.company.create({
         data: input,
@@ -48,7 +48,7 @@ export const companyRouter = router({
       return company
     }),
   delete: publicProcedure
-    .input(deleteCompanyInputShape)
+    .input(deleteCompanyInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.company.delete({ where: { id } })
@@ -56,7 +56,7 @@ export const companyRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdCompanyInputShape)
+    .input(GetByIdCompanyInputSchema)
     .query(async ({ input }) => await prisma.company.findUnique({ where: input })),
   list: publicProcedure
     .input(companyListInputSchema)

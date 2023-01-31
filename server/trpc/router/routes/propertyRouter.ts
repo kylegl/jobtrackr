@@ -5,11 +5,11 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createPropertyInputShape = z.object({
+export const createPropertyInputSchema = z.object({
   address: z.string(),
   gateCode: z.string().optional(),
 })
-export type CreatePropertyInput = z.infer<typeof createPropertyInputShape>
+export type CreatePropertyInput = z.infer<typeof createPropertyInputSchema>
 
 export const updatePropertyInputSchema = z.object({
   id: idSchema,
@@ -18,15 +18,15 @@ export const updatePropertyInputSchema = z.object({
 })
 export type UpdatePropertyInput = z.infer<typeof updatePropertyInputSchema>
 
-export const GetByIdPropertyInputShape = z.object({
+export const GetByIdPropertyInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdPropertyInput = z.infer<typeof GetByIdPropertyInputShape>
+export type GetByIdPropertyInput = z.infer<typeof GetByIdPropertyInputSchema>
 
-export const deletePropertyInputShape = z.object({
+export const deletePropertyInputSchema = z.object({
   id: idSchema,
 })
-export type DeletePropertyInput = z.infer<typeof deletePropertyInputShape>
+export type DeletePropertyInput = z.infer<typeof deletePropertyInputSchema>
 
 export const PropertyListInputSchema = z.object({
   id: idSchema.optional(),
@@ -37,7 +37,7 @@ export const PropertyListInputSchema = z.object({
 
 export const propertyRouter = router({
   add: publicProcedure
-    .input(createPropertyInputShape)
+    .input(createPropertyInputSchema)
     .mutation(async ({ input }) => {
       const property = await prisma.property.create({
         data: input,
@@ -46,7 +46,7 @@ export const propertyRouter = router({
       return property
     }),
   delete: publicProcedure
-    .input(deletePropertyInputShape)
+    .input(deletePropertyInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.property.delete({ where: { id } })
@@ -54,7 +54,7 @@ export const propertyRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdPropertyInputShape)
+    .input(GetByIdPropertyInputSchema)
     .query(async ({ input }) => await prisma.property.findUnique({ where: input })),
   list: publicProcedure
     .input(PropertyListInputSchema)

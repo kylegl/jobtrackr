@@ -1,18 +1,15 @@
 import {
   bidRouter,
-  bidStatusRouter,
   companyRouter,
   contactRouter,
   employeeRouter,
   jobRouter,
-  jobStatusRouter,
+  jobTitleRouter,
   jobTypeRouter,
   propertyRouter,
   taskRouter,
-  taskStatusRouter,
   userRouter,
   workOrderRouter,
-  workOrderStatusRouter,
 } from '~~/server/trpc/router/routes'
 import { router } from '~~/server/trpc/trpc'
 
@@ -23,14 +20,11 @@ export const appRouter = router({
   contact: contactRouter,
   property: propertyRouter,
   job: jobRouter,
-  jobStatus: jobStatusRouter,
+  jobTitle: jobTitleRouter,
   jobType: jobTypeRouter,
   bid: bidRouter,
-  bidStatus: bidStatusRouter,
   task: taskRouter,
-  taskStatus: taskStatusRouter,
   workOrder: workOrderRouter,
-  workOrderStatus: workOrderStatusRouter,
 })
 
 // export type definition of API

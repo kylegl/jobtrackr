@@ -13,14 +13,14 @@ CREATE TABLE "employee" (
     "isEmployed" BOOLEAN NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "positionId" TEXT,
-    CONSTRAINT "employee_positionId_fkey" FOREIGN KEY ("positionId") REFERENCES "employeePosition" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "titleId" TEXT NOT NULL,
+    CONSTRAINT "employee_titleId_fkey" FOREIGN KEY ("titleId") REFERENCES "jobTitle" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
-CREATE TABLE "employeePosition" (
+CREATE TABLE "jobTitle" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -44,7 +44,6 @@ CREATE TABLE "contact" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "companyId" TEXT,
-    "employeeId" TEXT,
     CONSTRAINT "contact_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "company" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
@@ -75,19 +74,12 @@ CREATE TABLE "job" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "typeId" TEXT,
-    "statusId" TEXT,
+    "status" TEXT NOT NULL,
     "companyId" TEXT,
     "propertyId" TEXT,
     CONSTRAINT "job_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "jobType" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "job_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "jobStatus" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "job_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "company" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "job_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "property" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "jobStatus" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -112,16 +104,9 @@ CREATE TABLE "bid" (
     "updatedAt" DATETIME NOT NULL,
     "propertyId" TEXT,
     "typeId" TEXT,
-    "statusId" TEXT,
+    "status" TEXT NOT NULL,
     CONSTRAINT "bid_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "property" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "bid_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "jobType" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "bid_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "bidStatus" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "bidStatus" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL
+    CONSTRAINT "bid_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "jobType" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -136,16 +121,9 @@ CREATE TABLE "task" (
     "closedAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "statusId" TEXT,
+    "status" TEXT NOT NULL,
     "workOrderId" TEXT,
-    CONSTRAINT "task_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "taskStatus" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "task_workOrderId_fkey" FOREIGN KEY ("workOrderId") REFERENCES "workOrder" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "taskStatus" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -162,16 +140,9 @@ CREATE TABLE "workOrder" (
     "updatedAt" DATETIME NOT NULL,
     "jobId" TEXT,
     "companyId" TEXT,
-    "statusId" TEXT,
+    "status" TEXT NOT NULL,
     CONSTRAINT "workOrder_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "job" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "workOrder_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "company" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "workOrder_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "workOrderStatus" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "workOrderStatus" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL
+    CONSTRAINT "workOrder_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "company" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -224,6 +195,30 @@ CREATE TABLE "_bidTojob" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "jobTitle_title_key" ON "jobTitle"("title");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "company_name_key" ON "company"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_name_key" ON "job"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "job_number_key" ON "job"("number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "jobType_name_key" ON "jobType"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "bid_name_key" ON "bid"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "bid_number_key" ON "bid"("number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "workOrder_number_key" ON "workOrder"("number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_employeeToworkOrder_AB_unique" ON "_employeeToworkOrder"("A", "B");
