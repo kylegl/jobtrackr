@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GenerateMockOptions } from '@anatine/zod-mock'
 import { generateMock } from '@anatine/zod-mock'
 import { faker } from '@faker-js/faker'
@@ -5,32 +6,67 @@ import type { ZodTypeAny } from 'zod'
 import { z } from 'zod'
 import { fPhone } from './faker'
 
+// TODO heres what im thinking. fuck prisma upsert. use prisma create, return ids needed
+// to link them to whatever you need to. currently upsert doesn't work for one to many relations
+
 // #region schemas
 
 const defaultStringMap = {
   phone: () => fPhone(),
+  sentAt: () => faker.date.soon(parseInt(faker.random.numeric())),
   startAt: () => faker.date.soon(parseInt(faker.random.numeric())),
   dueAt: () => faker.date.soon(parseInt(faker.random.numeric(2))),
-  closedAt: () => faker.date.soon(parseInt(faker.random.numeric(3))),
+  closedAt: () => faker.helpers.maybe(() => faker.date.soon(parseInt(faker.random.numeric(3))), { probability: 0.1 }),
+  total: () => parseInt(faker.random.numeric(5)),
+  hours: () => parseInt(faker.random.numeric(3)),
+  typeId: () => faker.helpers.arrayElement(['cldjui2dy0000345eu82a32ya', 'cldjuk5ah000034fzvzw83z6j']),
+  companyId: () => faker.helpers.arrayElement(['cldjts4sw000s34ynorfyv1i4', 'cldjts4so000e34yn2ukpmved', 'cldjts4se000034yn28byetwa']),
+  propertyId: () => faker.helpers.arrayElement(['cldjucf00000i34icr0kmttjr', 'cldjucezr000g34ic51fwhp7i', 'cldjucezk000e34ico6to0lsf', 'cldjuceze000c34ic6ltztltg', 'cldjucez6000a34ic12v7c8pr', 'cldjuceyy000834ic0nafyq19', 'cldjuceyl000434ic48kop57z']),
+  notes: () => faker.lorem.sentences(),
 }
 
-const mockJobTitles = ['Manager', 'Supervisor', 'Painter']
+const mockJobTitle: MockSchema = {
+  schema: z.object({
+    title: z.enum(['Manager', 'Supervisor', 'Painter']),
+  }),
+  options: {
+    stringMap: {
+      title: () => faker.helpers.unique(['Manager', 'Supervisor', 'Painter']),
+    },
+  },
+}
 
-function generateJobTitles() {
-  return mockJobTitles.map(title => ({ title }))
+const mockJobType: MockSchema = {
+  schema: z.object({
+    name: z.enum(['Painting', 'Finishing']),
+  }),
+  options: {
+    stringMap: {
+      name: () => faker.helpers.arrayElement(['Painting', 'Finishing']),
+    },
+  },
+}
+
+const mockEmployeeOptions = {
+  stringMap: {
+    titleId: () => faker.helpers.unique(['cldhbu6m3000034dsxicl4bwj', 'cldhbu6mf002c34dsnj81akej']),
+    ...defaultStringMap,
+  },
 }
 
 const mockEmployeeInputSchema = z.object({
   name: z.string(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
-  title: z.string().optional(),
-  titleId: z.string().cuid().optional(),
+  titleId: z.string(),
   isEmployed: z.boolean(),
 })
 
-function generateEmployee() {
-  return generateMock(mockEmployeeInputSchema, { stringMap: defaultStringMap })
+const mockEmployee: MockSchema = {
+  schema: mockEmployeeInputSchema,
+  options: {
+    stringMap: defaultStringMap,
+  },
 }
 
 const mockContactInputSchema = z.object({
@@ -39,13 +75,11 @@ const mockContactInputSchema = z.object({
   email: z.string().email().optional(),
 })
 
-const mockContactOptions = {
-  stringMap: defaultStringMap,
-}
-
-const mockContact = {
+const mockContact: MockSchema = {
   schema: mockContactInputSchema,
-  options: mockContactOptions,
+  options: {
+    stringMap: defaultStringMap,
+  },
 }
 
 const mockCompanyInputSchema = z.object({
@@ -69,50 +103,192 @@ const mockCompany = {
   options: mockCompanyOptions,
 }
 
+const mockPropertySchema = z.object({
+  address: z.string(),
+  gateCode: z.string().optional(),
+})
+
+const mockPropertyOptions: MockOptions = {
+  stringMap: {
+    address: () => faker.address.streetAddress(),
+    gateCode: () => faker.random.numeric(3),
+  },
+}
+
+const mockProperty: MockSchema = {
+  schema: mockPropertySchema,
+  options: mockPropertyOptions,
+}
+
+// const mockJobInputSchema =
+
 // #endregion
 
-const seedMockDataSchema: MockDataSchema[] = [
-  {
-    model: 'company',
-    pk: 'name',
-    num: 3,
-    mock: mockCompany,
-    subMocks: [
-      {
-        key: 'contacts',
-        data:
-          {
-            model: 'contact',
-            mock: mockContact,
-            num: 3,
-          },
-      },
-    ],
+const mockBidOptions = {
+  stringMap: {
+    name: () => faker.name.lastName(),
+    number: () => `B-23-${faker.random.numeric(3)}`,
+    ...defaultStringMap,
+    ...defaultStringMap,
   },
+}
+
+const mockBidSchema = z.object({
+  name: z.string(),
+  number: z.number().optional(),
+  isPrevailingWage: z.boolean(),
+  isHourly: z.boolean(),
+  total: z.number().optional(),
+  hours: z.number().optional(),
+  sentAt: z.string().optional(),
+  dueAt: z.string().optional(),
+  closedAt: z.string().optional(),
+  typeId: z.string().optional(),
+  status: z.enum(['notStarted', 'started', 'review', 'completed', 'cancelled', 'hold']),
+  propertyId: z.string().optional(),
+})
+
+const mockBid = {
+  schema: mockBidSchema,
+  options: mockBidOptions,
+}
+
+const mockJobOptions: MockOptions = {
+  stringMap: {
+    name: () => faker.helpers.unique(faker.name.lastName),
+    number: () => `2023${faker.random.numeric(3)}`,
+    contractTotal: () => parseInt(faker.random.numeric(5)),
+    invoicedTotal: () => parseInt(faker.random.numeric(3)),
+    paidTotal: () => parseInt(faker.random.numeric(2)),
+    ...defaultStringMap,
+  },
+}
+
+const mockJobSchema = z.object({
+  name: z.string(),
+  number: z.number().optional(),
+  isPrevailingWage: z.boolean(),
+  isHourly: z.boolean(),
+  contractTotal: z.number().optional(),
+  invoicedTotal: z.number().optional(),
+  paidTotal: z.number().optional(),
+  startAt: z.string(),
+  dueAt: z.string(),
+  closedAt: z.string().optional(),
+  hours: z.number().optional(),
+  notes: z.string().optional(),
+  typeId: z.string(),
+  status: z.enum(['notStarted', 'started', 'completed', 'cancelled', 'hold']),
+  companyId: z.string().optional(),
+  propertyId: z.string().optional(),
+})
+
+const mockJob: MockSchema = {
+  schema: mockJobSchema,
+  options: mockJobOptions,
+}
+
+const seedMockDataSchema: MockDataSchema[] = [
   // {
   //   model: 'jobTitle',
+  //   action: 'upsert',
   //   pk: 'title',
-  //   generator: generateJobTitles,
+  //   mock: mockJobTitle,
+  //   num: 3,
+  //   subMocks: [
+  //     {
+  //       key: 'employees',
+  //       data: {
+  //         pk: 'name',
+  //         model: 'employee',
+  //         mock: mockEmployee,
+  //         num: 10,
+  //       },
+  //     },
+  //   ],
   // },
+  // {
+  //   model: 'jobType',
+  //   action: 'create',
+  //   pk: 'id',
+  //   mock: mockJobType,
+  //   num: 2,
+  // },
+  // {
+  //   model: 'company',
+  //   pk: 'name',
+  //   num: 3,
+  //   mock: mockCompany,
+  //   subMocks: [
+  //     {
+  //       key: 'contacts',
+  //       data:
+  //         {
+  //           model: 'contact',
+  //           pk: 'name',
+  //           mock: mockContact,
+  //           num: 3,
+  //         },
+  //     },
+  //   ],
+  // },
+  // {
+  //   model: 'property',
+  //   action: 'create',
+  //   pk: 'id',
+  //   mock: mockProperty,
+  //   num: 10,
+  // },
+  // {
+  //   model: 'employee',
+  //   action: 'create',
+  //   pk: 'id',
+  //   num: 20,
+  // },
+  // {
+  //   model: 'bid',
+  //   action: 'create',
+  //   pk: 'id',
+  //   mock: mockBid,
+  //   num: 5,
+  // },
+  {
+    model: 'job',
+    action: 'create',
+    pk: 'id',
+    mock: mockJob,
+    num: 10,
+  },
 ]
 
 // utils
 export function getSeeds(mockSchema = seedMockDataSchema) {
-  const upsertData = mockSchema.map((mock) => {
+  const mocks = mockSchema.map((mock) => {
     const data = generateMockData(mock)
-    const upserts = data.map(item => generateUpsert(mock.pk, item))
-    return { model: mock.model, upserts }
-  })
+    let prismaData
+    if (mock.action === 'upsert')
 
-  return upsertData
+      prismaData = data.map(item => generateUpsert(mock.pk, item))
+
+    if (mock.action === 'create')
+      prismaData = data.map(item => generateCreate(item))
+
+    return { model: mock.model, action: mock.action, prismaData }
+  })
+  console.log('mocks', mocks)
+  return mocks
 }
 
 function generateUpsert(pk: string, data) {
   return {
-    where: { [pk]: data[pk] },
+    where: { [pk]: data[pk] || '' },
     update: {},
     create: data,
   }
+}
+
+function generateCreate(data) {
+  return { data }
 }
 
 function _generateMock<
@@ -155,6 +331,7 @@ function generateMockData(item: MockDataSchema) {
 
 interface MockDataSchema {
   model: string
+  action?: string
   mock?: {
     schema?: ZodTypeAny
     options?: MockOptions
@@ -172,5 +349,10 @@ interface SubMock {
 
 interface MockOptions extends GenerateMockOptions {
   subSchemas?: MockDataSchema[]
+}
+
+interface MockSchema {
+  schema: ZodTypeAny
+  options: MockOptions
 }
 

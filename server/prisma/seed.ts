@@ -6,8 +6,8 @@ const prisma = new PrismaClient()
 async function main() {
   const data = getSeeds()
   await asyncForEach(data, async (seed) => {
-    const { upserts } = seed
-    await asyncForEach(upserts, async upsert => await prisma[seed.model].upsert(upsert))
+    const { model, action, prismaData } = seed
+    const res = await asyncForEach(prismaData, async data => await prisma[model][action](data))
   })
 }
 
