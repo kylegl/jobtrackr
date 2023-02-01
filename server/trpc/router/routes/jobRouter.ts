@@ -2,7 +2,7 @@ import { z } from 'zod'
 import type { ContactAddInput } from '~~/server/trpc/router/routes/contactRouter'
 import { createOrAddContactInputSchema } from '~~/server/trpc/router/routes/contactRouter'
 import type { IdInput } from '~~/server/schemas'
-import { datetimeSchema, idSchema, jobStatusSchema } from '~~/server/schemas'
+import { datetimeSchema, idSchema, jobStatusOptionsSchema } from '~~/server/schemas'
 import { prisma } from '~~/server/prisma/prisma'
 import { publicProcedure, router } from '~~/server/trpc/trpc'
 
@@ -25,7 +25,7 @@ export const jobAddInputSchema = z.object({
   closedAt: datetimeSchema.optional(),
   notes: z.string().optional(),
   typeId: idSchema.optional(),
-  status: jobStatusSchema,
+  status: jobStatusOptionsSchema,
   contacts: z.array(createOrAddContactInputSchema).optional(),
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
@@ -50,7 +50,7 @@ export const jobUpdateInputSchema = z.object({
   closedAt: datetimeSchema.optional(),
   notes: z.string().optional(),
   typeId: idSchema.optional(),
-  status: jobStatusSchema.optional(),
+  status: jobStatusOptionsSchema.optional(),
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
   contacts: z.array(createOrAddContactInputSchema).optional(),

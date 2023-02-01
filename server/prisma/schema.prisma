@@ -31,7 +31,7 @@ model jobTitle {
   title     String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  employees  employee[]
+  employees employee[]
 }
 
 model company {

@@ -2,7 +2,7 @@ import { z } from 'zod'
 import type { ContactAddInput } from './contactRouter'
 import { createOrAddContactInputSchema } from '~~/server/trpc/router/routes/contactRouter'
 import type { IdInput } from '~~/server/schemas'
-import { bidStatusSchema, datetimeSchema, idSchema } from '~~/server/schemas'
+import { bidStatusOptionsSchema, datetimeSchema, idSchema } from '~~/server/schemas'
 import { prisma } from '~~/server/prisma/prisma'
 import { publicProcedure, router } from '~~/server/trpc/trpc'
 
@@ -22,7 +22,7 @@ export const bidAddInputSchema = z.object({
   dueAt: datetimeSchema.optional(),
   closedAt: datetimeSchema.optional(),
   typeId: idSchema.optional(),
-  status: bidStatusSchema,
+  status: bidStatusOptionsSchema,
   contacts: z.array(createOrAddContactInputSchema).optional(),
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
@@ -41,7 +41,7 @@ export const bidUpdateInputSchema = z.object({
   dueAt: datetimeSchema.optional(),
   closedAt: datetimeSchema.optional(),
   typeId: idSchema.optional(),
-  status: bidStatusSchema.optional(),
+  status: bidStatusOptionsSchema.optional(),
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
   contacts: z.array(createOrAddContactInputSchema).optional(),

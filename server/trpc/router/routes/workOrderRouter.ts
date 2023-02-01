@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { datetimeSchema, idInputSchema, idSchema, jobStatusSchema } from '~~/server/schemas'
+import { datetimeSchema, idInputSchema, idSchema, jobStatusOptionsSchema } from '~~/server/schemas'
 import { prisma } from '~~/server/prisma/prisma'
 import { publicProcedure, router } from '~~/server/trpc/trpc'
 
@@ -15,7 +15,7 @@ export const workOrderAddInputSchema = z.object({
   closedAt: datetimeSchema.optional(),
   companyId: idSchema.optional(),
   jobId: idSchema.optional(),
-  status: jobStatusSchema,
+  status: jobStatusOptionsSchema,
 })
 export type WorkOrderAddInput = z.infer<typeof workOrderAddInputSchema>
 
@@ -30,7 +30,7 @@ export const workOrderUpdateInputSchema = z.object({
   closedAt: datetimeSchema.optional(),
   companyId: idSchema.optional(),
   jobId: idSchema.optional(),
-  status: jobStatusSchema.optional(),
+  status: jobStatusOptionsSchema.optional(),
 })
 
 export type WorkOrderUpdateInput = z.infer<typeof workOrderUpdateInputSchema>
@@ -42,9 +42,8 @@ export const workOrderDeleteInputSchema = idInputSchema
 export type WorkOrderDeleteInput = z.infer<typeof workOrderDeleteInputSchema>
 
 export const WorkOrderListInputSchema = z.object({
-  id: idSchema.optional(),
   jobId: idSchema.optional(),
-})
+}).optional()
 export type WorkOrderListInput = z.infer<typeof WorkOrderListInputSchema>
 
 // #endregion
