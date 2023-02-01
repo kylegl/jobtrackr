@@ -5,34 +5,35 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createJobTypeInputSchema = z.object({
+export const jobTypeAddInputSchema = z.object({
   name: z.string(),
 })
-export type CreateJobTypeInput = z.infer<typeof createJobTypeInputSchema>
+export type JobTypeAddInput = z.infer<typeof jobTypeAddInputSchema>
 
-export const updateJobTypeInputSchema = z.object({
+export const jobTypeUpdateInputSchema = z.object({
   id: idSchema,
   name: z.string(),
 })
 
-export type UpdateJobTypeInput = z.infer<typeof updateJobTypeInputSchema>
+export type JobTypeUpdateInput = z.infer<typeof jobTypeUpdateInputSchema>
 
-export const GetByIdJobTypeInputSchema = idInputSchema
-export type GetByIdJobTypeInput = z.infer<typeof GetByIdJobTypeInputSchema>
+export const jobTypeGetByIdInputSchema = idInputSchema
+export type JobTypeGetByIdInput = z.infer<typeof jobTypeGetByIdInputSchema>
 
-export const deleteJobTypeInputSchema = idInputSchema
-export type DeleteJobTypeInput = z.infer<typeof deleteJobTypeInputSchema>
+export const jobTypeDeleteInputSchema = idInputSchema
+export type JobTypeDeleteInput = z.infer<typeof jobTypeDeleteInputSchema>
 
 export const JobTypeListInputSchema = z.object({
   id: idSchema.optional(),
   name: z.string().optional(),
 })
+export type JobTypeListInput = z.infer<typeof JobTypeListInputSchema>
 
 // #endregion
 
 export const jobTypeRouter = router({
   add: publicProcedure
-    .input(createJobTypeInputSchema)
+    .input(jobTypeAddInputSchema)
     .mutation(async ({ input }) => {
       const jobType = await prisma.jobType.create({
         data: input,
@@ -41,7 +42,7 @@ export const jobTypeRouter = router({
       return jobType
     }),
   delete: publicProcedure
-    .input(deleteJobTypeInputSchema)
+    .input(jobTypeDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.jobType.delete({ where: { id } })
@@ -49,7 +50,7 @@ export const jobTypeRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdJobTypeInputSchema)
+    .input(jobTypeGetByIdInputSchema)
     .query(async ({ input }) => await prisma.jobType.findUnique({ where: input })),
   list: publicProcedure
     .input(JobTypeListInputSchema)
@@ -59,7 +60,7 @@ export const jobTypeRouter = router({
       return jobType
     }),
   update: publicProcedure
-    .input(updateJobTypeInputSchema)
+    .input(jobTypeUpdateInputSchema)
     .mutation(async ({ input }) => {
       const { id, name } = input
       const jobType = await prisma.jobType.update({

@@ -5,41 +5,42 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region(collapsed) Router Schemas
 
-export const createCompanyInputSchema = z.object({
+export const companyAddInputSchema = z.object({
   name: z.string(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
 })
-export type CreateCompanyInput = z.infer<typeof createCompanyInputSchema>
+export type CompanyAddInput = z.infer<typeof companyAddInputSchema>
 
-export const updateCompanyInputSchema = z.object({
+export const companyUpdateInputSchema = z.object({
   id: idSchema,
   name: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
 })
-export type UpdateCompanyInput = z.infer<typeof updateCompanyInputSchema>
+export type CompanyUpdateInput = z.infer<typeof companyUpdateInputSchema>
 
-export const GetByIdCompanyInputSchema = z.object({
+export const companyGetByIdInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdCompanyInput = z.infer<typeof GetByIdCompanyInputSchema>
+export type CompanyGetByIdInput = z.infer<typeof companyGetByIdInputSchema>
 
-export const deleteCompanyInputSchema = z.object({
+export const companyDeleteInputSchema = z.object({
   id: idSchema,
 })
-export type DeleteCompanyInput = z.infer<typeof deleteCompanyInputSchema>
+export type CompanyDeleteInput = z.infer<typeof companyDeleteInputSchema>
 
 export const companyListInputSchema = z.object({
   id: idSchema.optional(),
   name: z.string().optional(),
 })
+export type CompanyListInput = z.infer<typeof companyListInputSchema>
 
 // #endregion
 
 export const companyRouter = router({
   add: publicProcedure
-    .input(createCompanyInputSchema)
+    .input(companyAddInputSchema)
     .mutation(async ({ input }) => {
       const company = await prisma.company.create({
         data: input,
@@ -48,7 +49,7 @@ export const companyRouter = router({
       return company
     }),
   delete: publicProcedure
-    .input(deleteCompanyInputSchema)
+    .input(companyDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.company.delete({ where: { id } })
@@ -56,7 +57,7 @@ export const companyRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdCompanyInputSchema)
+    .input(companyGetByIdInputSchema)
     .query(async ({ input }) => await prisma.company.findUnique({ where: input })),
   list: publicProcedure
     .input(companyListInputSchema)
@@ -66,7 +67,7 @@ export const companyRouter = router({
       return companies
     }),
   update: publicProcedure
-    .input(updateCompanyInputSchema)
+    .input(companyUpdateInputSchema)
     .mutation(async ({ input }) => {
       const { id, name, email, phone } = input
       const company = await prisma.company.update({
