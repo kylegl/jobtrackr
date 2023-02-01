@@ -25,28 +25,6 @@ async function handleDelete(id: string) {
 
 <template>
   <div flex="~ col" gap4 justify-center items-center text-gray>
-    <Logos mb-6 />
-    <Suspense>
-      <template #fallback>
-        <div op50 italic>
-          <span animate-pulse>Loading...</span>
-        </div>
-      </template>
-    </Suspense>
-    <div v-if="employees" flex="~ col" items-center justify-center gap2>
-      <div flex="~ col" gap2>
-        <Btn @click="handleAddContact">Add</Btn>
-      </div>
-      {{ employees.length }}
-      <div flex="~ col" />
-      <div v-for="emp in employees" :key="emp?.id">
-        <div flex-inline gap4>
-          <span>{{ emp?.name }}</span>
-          <Btn @click="handleDelete(emp.id)">
-            Delete
-          </Btn>
-        </div>
-      </div>
-    </div>
+    <h1>Hello World</h1>
   </div>
 </template>
