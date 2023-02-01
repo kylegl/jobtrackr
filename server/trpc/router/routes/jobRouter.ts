@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { CreateContactInput } from '~~/server/trpc/router/routes/contactRouter'
+import type { ContactAddInput } from '~~/server/trpc/router/routes/contactRouter'
 import { createOrAddContactInputSchema } from '~~/server/trpc/router/routes/contactRouter'
 import type { IdInput } from '~~/server/schemas'
 import { datetimeSchema, idSchema, jobStatusSchema } from '~~/server/schemas'
@@ -11,7 +11,7 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createJobInputSchema = z.object({
+export const jobAddInputSchema = z.object({
   name: z.string(),
   number: z.number().optional(),
   isPrevailingWage: z.boolean(),
@@ -33,9 +33,9 @@ export const createJobInputSchema = z.object({
   bids: z.array(z.string()).optional(),
   workOrders: z.array(z.string()).optional(),
 })
-export type CreateJobInput = z.infer<typeof createJobInputSchema>
+export type JobAddInput = z.infer<typeof jobAddInputSchema>
 
-export const updateJobInputSchema = z.object({
+export const jobUpdateInputSchema = z.object({
   id: idSchema,
   name: z.string().optional(),
   number: z.number().optional(),
@@ -58,29 +58,30 @@ export const updateJobInputSchema = z.object({
   bids: z.array(z.string()).optional(),
   workOrders: z.array(z.string()).optional(),
 })
-export type UpdateJobInput = z.infer<typeof updateJobInputSchema>
+export type JobUpdateInput = z.infer<typeof jobUpdateInputSchema>
 
-export const GetByIdJobInputSchema = z.object({
+export const jobGetByIdInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdJobInput = z.infer<typeof GetByIdJobInputSchema>
+export type JobGetByIdInput = z.infer<typeof jobGetByIdInputSchema>
 
-export const deleteJobInputSchema = z.object({
+export const jobDeleteInputSchema = z.object({
   id: idSchema,
 })
-export type DeleteJobInput = z.infer<typeof deleteJobInputSchema>
+export type JobDeleteInput = z.infer<typeof jobDeleteInputSchema>
 
-export const JobListInputSchema = z.object({
+export const jobListInputSchema = z.object({
   id: idSchema.optional(),
   name: z.string().optional(),
   companyId: idSchema.optional(),
 })
+export type JobListInput = z.infer<typeof jobListInputSchema>
 
 // #endregion
 
 export const jobRouter = router({
   add: publicProcedure
-    .input(createJobInputSchema)
+    .input(jobAddInputSchema)
     .mutation(async ({ input }) => {
       const {
         name,
@@ -124,7 +125,7 @@ export const jobRouter = router({
           contacts: {
             connectOrCreate: contacts?.map((c) => {
               let where: IdInput | { id: undefined } = { id: undefined }
-              let create: CreateContactInput | undefined
+              let create: ContactAddInput | undefined
               if ('id' in c)
                 where = { id: c.id }
               if ('name' in c) {
@@ -132,7 +133,7 @@ export const jobRouter = router({
                   name: c.name,
                   phone: c.phone,
                   email: c.email,
-                } as CreateContactInput
+                } as ContactAddInput
               }
               return {
                 where,
@@ -146,7 +147,7 @@ export const jobRouter = router({
       return job
     }),
   delete: publicProcedure
-    .input(deleteJobInputSchema)
+    .input(jobDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.job.delete({ where: { id } })
@@ -154,17 +155,17 @@ export const jobRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdJobInputSchema)
+    .input(jobGetByIdInputSchema)
     .query(async ({ input }) => await prisma.job.findUnique({ where: input })),
   list: publicProcedure
-    .input(JobListInputSchema)
+    .input(jobListInputSchema)
     .query(async ({ input }) => {
       const jobs = await prisma.job.findMany({ where: input })
 
       return jobs
     }),
   update: publicProcedure
-    .input(updateJobInputSchema)
+    .input(jobUpdateInputSchema)
     .mutation(async ({ input }) => {
       const {
         id,

@@ -5,39 +5,40 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createPropertyInputSchema = z.object({
+export const propertyAddInputSchema = z.object({
   address: z.string(),
   gateCode: z.string().optional(),
 })
-export type CreatePropertyInput = z.infer<typeof createPropertyInputSchema>
+export type PropertyAddInput = z.infer<typeof propertyAddInputSchema>
 
 export const updatePropertyInputSchema = z.object({
   id: idSchema,
   address: z.string().optional(),
   gateCode: z.string().optional(),
 })
-export type UpdatePropertyInput = z.infer<typeof updatePropertyInputSchema>
+export type PropertyUpdateInput = z.infer<typeof updatePropertyInputSchema>
 
-export const GetByIdPropertyInputSchema = z.object({
+export const propertyGetByIdInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdPropertyInput = z.infer<typeof GetByIdPropertyInputSchema>
+export type PropertyGetByIdInput = z.infer<typeof propertyGetByIdInputSchema>
 
-export const deletePropertyInputSchema = z.object({
+export const propertyDeleteInputSchema = z.object({
   id: idSchema,
 })
-export type DeletePropertyInput = z.infer<typeof deletePropertyInputSchema>
+export type PropertyDeleteInput = z.infer<typeof propertyDeleteInputSchema>
 
 export const PropertyListInputSchema = z.object({
   id: idSchema.optional(),
   address: z.string().optional(),
 })
+export type PropertyListInput = z.infer<typeof PropertyListInputSchema>
 
 // #endregion
 
 export const propertyRouter = router({
   add: publicProcedure
-    .input(createPropertyInputSchema)
+    .input(propertyAddInputSchema)
     .mutation(async ({ input }) => {
       const property = await prisma.property.create({
         data: input,
@@ -46,7 +47,7 @@ export const propertyRouter = router({
       return property
     }),
   delete: publicProcedure
-    .input(deletePropertyInputSchema)
+    .input(propertyDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.property.delete({ where: { id } })
@@ -54,7 +55,7 @@ export const propertyRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdPropertyInputSchema)
+    .input(propertyGetByIdInputSchema)
     .query(async ({ input }) => await prisma.property.findUnique({ where: input })),
   list: publicProcedure
     .input(PropertyListInputSchema)

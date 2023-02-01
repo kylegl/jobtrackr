@@ -5,7 +5,7 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createTaskInputSchema = z.object({
+export const taskAddInputSchema = z.object({
   description: z.string().optional(),
   materials: z.string().optional(),
   hours: z.number().optional(),
@@ -16,9 +16,9 @@ export const createTaskInputSchema = z.object({
   status: jobStatusSchema,
   workOrderId: idSchema,
 })
-export type CreateTaskInput = z.infer<typeof createTaskInputSchema>
+export type TaskAddInput = z.infer<typeof taskAddInputSchema>
 
-export const updateTaskInputSchema = z.object({
+export const taskUpdateInputSchema = z.object({
   id: idSchema,
   description: z.string().optional(),
   materials: z.string().optional(),
@@ -31,24 +31,25 @@ export const updateTaskInputSchema = z.object({
   workOrderId: idSchema.optional(),
 })
 
-export type UpdateTaskInput = z.infer<typeof updateTaskInputSchema>
+export type TaskUpdateInput = z.infer<typeof taskUpdateInputSchema>
 
-export const GetByIdTaskInputSchema = idInputSchema
-export type GetByIdTaskInput = z.infer<typeof GetByIdTaskInputSchema>
+export const taskGetByIdInputSchema = idInputSchema
+export type TaskGetByIdInput = z.infer<typeof taskGetByIdInputSchema>
 
-export const deleteTaskInputSchema = idInputSchema
-export type DeleteTaskInput = z.infer<typeof deleteTaskInputSchema>
+export const taskDeleteInputSchema = idInputSchema
+export type TaskDeleteInput = z.infer<typeof taskDeleteInputSchema>
 
 export const TaskListInputSchema = z.object({
   id: idSchema.optional(),
   workOrderId: idSchema.optional(),
 })
+export type TaskListInput = z.infer<typeof TaskListInputSchema>
 
 // #endregion
 
 export const taskRouter = router({
   add: publicProcedure
-    .input(createTaskInputSchema)
+    .input(taskAddInputSchema)
     .mutation(async ({ input }) => {
       const task = await prisma.task.create({
         data: input,
@@ -57,7 +58,7 @@ export const taskRouter = router({
       return task
     }),
   delete: publicProcedure
-    .input(deleteTaskInputSchema)
+    .input(taskDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.task.delete({ where: { id } })
@@ -65,7 +66,7 @@ export const taskRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdTaskInputSchema)
+    .input(taskGetByIdInputSchema)
     .query(async ({ input }) => await prisma.task.findUnique({ where: input })),
   list: publicProcedure
     .input(TaskListInputSchema)
@@ -75,7 +76,7 @@ export const taskRouter = router({
       return tasks
     }),
   update: publicProcedure
-    .input(updateTaskInputSchema)
+    .input(taskUpdateInputSchema)
     .mutation(async ({ input }) => {
       const {
         id,

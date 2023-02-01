@@ -5,7 +5,7 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createWorkOrderInputSchema = z.object({
+export const workOrderAddInputSchema = z.object({
   number: z.number(),
   description: z.string().optional(),
   isHourly: z.boolean(),
@@ -17,9 +17,9 @@ export const createWorkOrderInputSchema = z.object({
   jobId: idSchema.optional(),
   status: jobStatusSchema,
 })
-export type CreateWorkOrderInput = z.infer<typeof createWorkOrderInputSchema>
+export type WorkOrderAddInput = z.infer<typeof workOrderAddInputSchema>
 
-export const updateWorkOrderInputSchema = z.object({
+export const workOrderUpdateInputSchema = z.object({
   id: idSchema,
   number: z.number().optional(),
   description: z.string().optional(),
@@ -33,24 +33,25 @@ export const updateWorkOrderInputSchema = z.object({
   status: jobStatusSchema.optional(),
 })
 
-export type UpdateWorkOrderInput = z.infer<typeof updateWorkOrderInputSchema>
+export type WorkOrderUpdateInput = z.infer<typeof workOrderUpdateInputSchema>
 
-export const GetByIdWorkOrderInputSchema = idInputSchema
-export type GetByIdWorkOrderInput = z.infer<typeof GetByIdWorkOrderInputSchema>
+export const workOrderGetByIdInputSchema = idInputSchema
+export type WorkOrderGetByIdInput = z.infer<typeof workOrderGetByIdInputSchema>
 
-export const deleteWorkOrderInputSchema = idInputSchema
-export type DeleteWorkOrderInput = z.infer<typeof deleteWorkOrderInputSchema>
+export const workOrderDeleteInputSchema = idInputSchema
+export type WorkOrderDeleteInput = z.infer<typeof workOrderDeleteInputSchema>
 
 export const WorkOrderListInputSchema = z.object({
   id: idSchema.optional(),
   jobId: idSchema.optional(),
 })
+export type WorkOrderListInput = z.infer<typeof WorkOrderListInputSchema>
 
 // #endregion
 
 export const workOrderRouter = router({
   add: publicProcedure
-    .input(createWorkOrderInputSchema)
+    .input(workOrderAddInputSchema)
     .mutation(async ({ input }) => {
       const workOrder = await prisma.workOrder.create({
         data: input,
@@ -59,7 +60,7 @@ export const workOrderRouter = router({
       return workOrder
     }),
   delete: publicProcedure
-    .input(deleteWorkOrderInputSchema)
+    .input(workOrderDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.workOrder.delete({ where: { id } })
@@ -67,7 +68,7 @@ export const workOrderRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdWorkOrderInputSchema)
+    .input(workOrderGetByIdInputSchema)
     .query(async ({ input }) => await prisma.workOrder.findUnique({ where: input })),
   list: publicProcedure
     .input(WorkOrderListInputSchema)
@@ -77,7 +78,7 @@ export const workOrderRouter = router({
       return workOrders
     }),
   update: publicProcedure
-    .input(updateWorkOrderInputSchema)
+    .input(workOrderUpdateInputSchema)
     .mutation(async ({ input }) => {
       const {
         id,

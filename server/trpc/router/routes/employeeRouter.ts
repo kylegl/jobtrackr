@@ -6,7 +6,7 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region(collapsed) Router Schemas
 
-export const createEmployeeInputSchema = z.object({
+export const employeeAddInputSchema = z.object({
   name: z.string(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
@@ -14,7 +14,7 @@ export const createEmployeeInputSchema = z.object({
   titleId: idSchema.optional(),
   isEmployed: z.boolean(),
 })
-export type CreateEmployeeInput = z.infer<typeof createEmployeeInputSchema>
+export type EmployeeAddInput = z.infer<typeof employeeAddInputSchema>
 
 export const updateEmployeeInputSchema = z.object({
   id: idSchema,
@@ -27,10 +27,10 @@ export const updateEmployeeInputSchema = z.object({
 })
 export type UpdateEmployeeInput = z.infer<typeof updateEmployeeInputSchema>
 
-export const GetByIdEmployeeInputSchema = z.object({
+export const EmployeeGetByIdInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdEmployeeInput = z.infer<typeof GetByIdEmployeeInputSchema>
+export type EmployeeGetByIdInput = z.infer<typeof EmployeeGetByIdInputSchema>
 
 export const deleteEmployeeInputSchema = z.object({
   id: idSchema,
@@ -38,15 +38,16 @@ export const deleteEmployeeInputSchema = z.object({
 export type DeleteEmployeeInput = z.infer<typeof deleteEmployeeInputSchema>
 
 export const employeeListInputSchema = z.object({
-  id: idSchema.optional(),
+  titleId: idSchema.optional(),
+  isEmployed: z.boolean().optional(),
   name: z.string().optional(),
-})
-
+}).optional()
+export type EmployeeListInput = z.infer<typeof employeeListInputSchema>
 // #endregion
 
 export const employeeRouter = router({
   add: publicProcedure
-    .input(createEmployeeInputSchema)
+    .input(employeeAddInputSchema)
     .mutation(async ({ input }) => {
       const { name, phone, email, isEmployed } = input
       const employee = await prisma.employee.create({
@@ -74,14 +75,14 @@ export const employeeRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdEmployeeInputSchema)
+    .input(EmployeeGetByIdInputSchema)
     .query(async ({ input }) => await prisma.employee.findUnique({ where: input })),
   list: publicProcedure
     .input(employeeListInputSchema)
     .query(async ({ input }) => {
-      const Employees = await prisma.employee.findMany({ where: input })
+      const employees = await prisma.employee.findMany({ where: input })
 
-      return Employees
+      return employees
     }),
   update: publicProcedure
     .input(updateEmployeeInputSchema)

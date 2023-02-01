@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { CreateContactInput } from './contactRouter'
+import type { ContactAddInput } from './contactRouter'
 import { createOrAddContactInputSchema } from '~~/server/trpc/router/routes/contactRouter'
 import type { IdInput } from '~~/server/schemas'
 import { bidStatusSchema, datetimeSchema, idSchema } from '~~/server/schemas'
@@ -11,7 +11,7 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 
 // #region (collapsed) Router Schemas
 
-export const createBidInputSchema = z.object({
+export const bidAddInputSchema = z.object({
   name: z.string(),
   number: z.number().optional(),
   isPrevailingWage: z.boolean(),
@@ -27,9 +27,9 @@ export const createBidInputSchema = z.object({
   companyId: idSchema.optional(),
   propertyId: idSchema.optional(),
 })
-export type CreateBidInput = z.infer<typeof createBidInputSchema>
+export type BidAddInput = z.infer<typeof bidAddInputSchema>
 
-export const updateBidInputSchema = z.object({
+export const bidUpdateInputSchema = z.object({
   id: idSchema,
   name: z.string().optional(),
   number: z.number().optional(),
@@ -48,29 +48,30 @@ export const updateBidInputSchema = z.object({
   // TODO update when bid & work order router is in
   jobs: z.array(z.string()).optional(),
 })
-export type UpdateBidInput = z.infer<typeof updateBidInputSchema>
+export type BidUpdateInput = z.infer<typeof bidUpdateInputSchema>
 
-export const GetByIdBidInputSchema = z.object({
+export const bidGetByIdInputSchema = z.object({
   id: idSchema,
 })
-export type GetByIdBidInput = z.infer<typeof GetByIdBidInputSchema>
+export type BidGetByIdInput = z.infer<typeof bidGetByIdInputSchema>
 
-export const deleteBidInputSchema = z.object({
+export const bidDeleteInputSchema = z.object({
   id: idSchema,
 })
-export type DeleteBidInput = z.infer<typeof deleteBidInputSchema>
+export type BidDeleteInput = z.infer<typeof bidDeleteInputSchema>
 
 export const BidListInputSchema = z.object({
   id: idSchema.optional(),
   name: z.string().optional(),
   companyId: idSchema.optional(),
 })
+export type BidListInput = z.infer<typeof BidListInputSchema>
 
 // #endregion
 
 export const bidRouter = router({
   add: publicProcedure
-    .input(createBidInputSchema)
+    .input(bidAddInputSchema)
     .mutation(async ({ input }) => {
       const {
         name,
@@ -110,7 +111,7 @@ export const bidRouter = router({
           contacts: {
             connectOrCreate: contacts?.map((c) => {
               let where: IdInput | { id: undefined } = { id: undefined }
-              let create: CreateContactInput | undefined
+              let create: ContactAddInput | undefined
               if ('id' in c)
                 where = { id: c.id }
               if ('name' in c) {
@@ -118,7 +119,7 @@ export const bidRouter = router({
                   name: c.name,
                   phone: c.phone,
                   email: c.email,
-                } as CreateContactInput
+                } as ContactAddInput
               }
               return {
                 where,
@@ -132,7 +133,7 @@ export const bidRouter = router({
       return bid
     }),
   delete: publicProcedure
-    .input(deleteBidInputSchema)
+    .input(bidDeleteInputSchema)
     .mutation(async ({ input }) => {
       const { id } = input
       await prisma.bid.delete({ where: { id } })
@@ -140,7 +141,7 @@ export const bidRouter = router({
       return id
     }),
   getById: publicProcedure
-    .input(GetByIdBidInputSchema)
+    .input(bidGetByIdInputSchema)
     .query(async ({ input }) => await prisma.bid.findUnique({ where: input })),
   list: publicProcedure
     .input(BidListInputSchema)
@@ -150,7 +151,7 @@ export const bidRouter = router({
       return bids
     }),
   update: publicProcedure
-    .input(updateBidInputSchema)
+    .input(bidUpdateInputSchema)
     .mutation(async ({ input }) => {
       const {
         id,
