@@ -1,30 +1,88 @@
 <script setup lang="ts">
-import type { ContactAddInput } from '~~/server/trpc/router/routes'
+const isLoading = true
+const searchResults = $ref([])
 
-const { data: employees } = useContactList({})
-const deleteEmployee = useEmployeeDelete()
-const addContact = useContactAdd()
+// const rawWos = $computed(() => workOrders ?? [])
+// const wos = $computed(() => searchResults?.length ? searchResults : rawWos)
+const filteredWos = $ref()
+const sortedWos = $ref()
+const testVal = ref('hello yuo')
+const firstName = $ref()
+const inputEl = $ref(null)
+const { focused } = useFocus($$(inputEl))
+let testErr = $ref()
 
-const newContact: ContactAddInput = {
-  name: 'Lo',
-  email: 'lo@lo.com',
-  phone: '123456789',
+function focusIt() {
+  console.log('preFocusValue', focused.value)
+  focused.value = !focused.value
+  console.log('isFocused', focused.value)
 }
 
-async function handleAddContact() {
-  const employee = await addContact.mutateAsync(newContact)
-  return employee
+function setModelValue() {
+  // firstName.error = 'you fucked up'
+  testErr = 'you fucked up'
+  firstName?.setFocus()
 }
 
-async function handleDelete(id: string) {
-  const res = await deleteEmployee.mutateAsync({ id })
+watchEffect(() => {
+  console.log('value', firstName?.val)
+  console.log(focused.value)
+})
 
-  return res
+function register(el: HTMLElement, name: Ref<any>) {
+  name.value = el
 }
 </script>
 
 <template>
-  <div flex="~ col" gap4 justify-center items-center text-gray>
-    <h1>Hello World</h1>
+  <div flex="~ col" gap8 w-full relative>
+    <h1 t3 heading>
+      Work Orders
+    </h1>
+    <section flex="~ col" gap4 w-full>
+      <div flex justify-between>
+        <SearchWos v-model:searchResults="searchResults" />
+
+        <NewWorkOrder :disabled="isLoading" />
+      </div>
+
+      <div flex gap2 items-center w-full flex-wrap justify-between>
+        <div flex gap2>
+          <Icon i-mdi:filter text-2xl my-auto op60 />
+          <Filter
+            v-model:filteredData="filteredWos" :filter-list="woFilters" :data="searchResults" :disabled="isLoading" flex
+            gap2
+          />
+        </div>
+
+        <div flex gap2>
+          <Icon i-mdi:sort text-2xl my-auto op60 />
+          <Sort
+            v-if="filteredWos" v-model:sortedList="sortedWos" :list="filteredWos" :keys="woSortKeys"
+            :disabled="isLoading" flex gap2
+          />
+        </div>
+      </div>
+
+      <Divider w="full" h=".25" />
+    </section>
+    <BaseBtn @click="setModelValue">
+      Focus
+    </BaseBtn>
+
+    <TextInput :ref="el => firstName = el" v-model="testVal" :error-msg="testErr" />
+    <!-- <input :ref="el => firstName = el" v-model="test" /> -->
+
+    <!-- <section>
+      <Loading v-if="isLoading" absolute-center />
+      <div v-else-if="isError">
+        There was a problem getting the Work Orders...
+      </div>
+      <div v-else>
+        <SlideGroup v-if="wos" flex="~ col" gap2>
+          <Workorder v-for="wo in sortedWos" :key="wo?.id" :workorder="wo" />
+        </SlideGroup>
+      </div>
+    </section> -->
   </div>
 </template>
