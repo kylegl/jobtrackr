@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { MaybeRef } from '@vueuse/core'
+
 const isLoading = true
 const searchResults = $ref([])
 
@@ -7,30 +9,38 @@ const searchResults = $ref([])
 const filteredWos = $ref()
 const sortedWos = $ref()
 const testVal = ref('hello yuo')
-const firstName = $ref()
+const firstName = ref()
 const inputEl = $ref(null)
 const { focused } = useFocus($$(inputEl))
-let testErr = $ref()
+const testErr = $ref()
 
-function focusIt() {
-  console.log('preFocusValue', focused.value)
-  focused.value = !focused.value
-  console.log('isFocused', focused.value)
-}
+const { register } = useController($$(firstName))
 
-function setModelValue() {
-  // firstName.error = 'you fucked up'
-  testErr = 'you fucked up'
-  firstName?.setFocus()
-}
+// function focusIt() {
+//   console.log('preFocusValue', focused.value)
+//   focused.value = !focused.value
+//   console.log('isFocused', focused.value)
+// }
 
-watchEffect(() => {
-  console.log('value', firstName?.val)
-  console.log(focused.value)
-})
+// function setModelValue() {
+//   // firstName.error = 'you fucked up'
+//   testErr = 'you fucked up'
+//   firstName?.setFocus()
+// }
 
-function register(el: HTMLElement, name: Ref<any>) {
-  name.value = el
+// watchEffect(() => {
+//   console.log('value', firstName?.val)
+//   console.log(focused.value)
+// })
+
+function useController(target: MaybeRef<any>) {
+  function register(el: HTMLElement) {
+    target.value = el
+  }
+
+  return {
+    register,
+  }
 }
 </script>
 
@@ -70,7 +80,7 @@ function register(el: HTMLElement, name: Ref<any>) {
       Focus
     </BaseBtn>
 
-    <TextInput :ref="el => firstName = el" v-model="testVal" :error-msg="testErr" />
+    <TextInput :ref="el => register(el)" v-model="testVal" :error-msg="testErr" />
     <!-- <input :ref="el => firstName = el" v-model="test" /> -->
 
     <!-- <section>
