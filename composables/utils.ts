@@ -1,5 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
-import type { JobStatusOptions } from './../server/schemas'
+import type { JobStatusOptions } from '~~/server/trpc/schemas'
 
 export const isDark = useDark()
 export const toggleDark = useToggle(isDark)
@@ -67,7 +67,7 @@ export function getStatusColor(
   employeeId?: string[],
   status?: JobStatusOptions,
 ) {
-  const withinAWeek = startDate && typeof startDate !== 'string'
+  const withinAWeek = (startDate && typeof startDate !== 'string')
     ? tsWithin(startDate, -7)
     : false
   let color: keyof typeof statusColors = status || 'default'
@@ -116,4 +116,3 @@ export function getFuseOptions(keys?: string[]) {
     },
   }
 }
-
