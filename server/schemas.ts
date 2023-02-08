@@ -8,5 +8,8 @@ export type DatetimeInput = z.infer<typeof datetimeSchema>
 export const idInputSchema = z.object({ id: idSchema })
 export type IdInput = z.infer<typeof idInputSchema>
 
-export const jobStatusSchema = z.enum(['notStarted', 'started', 'completed', 'cancelled', 'hold'])
-export const bidStatusSchema = z.enum(['notStarted', 'started', 'review', 'completed', 'cancelled', 'hold'])
+export const jobStatusOptionsSchema = z.enum(['notStarted', 'started', 'completed', 'cancelled', 'hold'])
+export type JobStatusOptions = z.infer<typeof jobStatusOptionsSchema>
+export const bidStatusOptionsSchema = z.enum(['notStarted', 'started', 'review', 'completed', 'cancelled', 'hold'])
+export type BidStatusOptions = z.infer<typeof bidStatusOptionsSchema>
+export type StatusOptions = JobStatusOptions | BidStatusOptions

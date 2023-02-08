@@ -16,14 +16,42 @@ useHead({
 </template>
 
 <style>
-html, body , #__nuxt{
-  height: 100vh;
+html,
+body,
+#__nuxt {
+  height: 100%;
   margin: 0;
   padding: 0;
 }
 
 html.dark {
-  background: #222;
-  color: white;
+  background: #121212;
+}
+
+ol {
+  list-style-position: inside;
+  list-style-type: decimal;
+}
+
+ul {
+  list-style-position: inside;
+  list-style-type: disc;
+}
+
+@keyframes rotate {
+  from {
+    transform-origin: center;
+    transform: rotate3d(0, 0, 1, 180deg);
+  }
+
+  to {
+    transform-origin: center;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 1s linear 1;
+  transform-origin: center;
 }
 </style>
