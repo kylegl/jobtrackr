@@ -88,3 +88,35 @@ export function useWorkOrderGetById(input: WorkOrderGetByIdInput) {
 
   return useQuery({ queryKey: ['workOrder', 'getById', input], queryFn })
 }
+
+export function newWo(job: unknown) {
+  const wo = {
+    'wo_number': nextWoNumber.value,
+    'FK|job_id': undefined,
+    'FK|bid_id': undefined,
+    'FK|client_id': undefined,
+    'FK|contact_id': [],
+    'FK|employee_id': [],
+    'FK|property_id': undefined,
+    'start_date': undefined,
+    'due_date': undefined,
+    'description': undefined,
+    'property_info': undefined,
+    'notes': undefined,
+    'bill_type': undefined,
+    'job_type': undefined,
+    'created_at': +new Date(),
+    'updated_at': null,
+    'closed_at': null,
+    'status': 'upcoming',
+  } as WorkorderType
+
+  if (job) {
+    wo['FK|job_id'] = job.id
+    wo['FK|bid_id'] = job['FK|bid_id']?.id
+    wo['FK|client_id'] = job['FK|client_id'].id
+    wo['FK|contact_id'] = job['FK|contact_id']?.length ? job['FK|contact_id']?.map(el => el.id) : []
+  }
+
+  return wo
+}
