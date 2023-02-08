@@ -23,4 +23,10 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
   },
+  imports: {
+    dirs: [
+      'composables/**',
+      'server/trpc/schemas',
+    ],
+  },
 })

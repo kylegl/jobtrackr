@@ -1,7 +1,12 @@
-import { z } from 'zod'
 import type { Prisma } from '@prisma/client'
-import type { IdInput } from '~~/server/schemas'
-import { idInputSchema, idSchema } from '~~/server/schemas'
+import type { ContactAddInput, IdInput } from '~~/server/trpc/schemas'
+import {
+  contactAddInputSchema,
+  contactDeleteInputSchema,
+  contactGetByIdInputSchema,
+  contactListInputSchema,
+  contactUpdateInputSchema,
+} from '~~/server/trpc/schemas'
 import { prisma } from '~~/server/prisma/prisma'
 import { publicProcedure, router } from '~~/server/trpc/trpc'
 
@@ -11,44 +16,6 @@ import { publicProcedure, router } from '~~/server/trpc/trpc'
 // see also https://stackoverflow.com/questions/65950407/prisma-many-to-many-relations-create-and-connect
 
 // #region (collapsed) Router Schemas
-
-export const contactAddInputSchema = z.object({
-  name: z.string(),
-  phone: z.string().optional(),
-  email: z.string().email().optional(),
-  companyId: idSchema.optional(),
-  jobId: idSchema.optional(),
-})
-export type ContactAddInput = z.infer<typeof contactAddInputSchema>
-
-export const contactUpdateInputSchema = z.object({
-  id: idSchema,
-  name: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email().optional(),
-  companyId: idSchema.optional(),
-  jobId: idSchema.optional(),
-})
-
-export type ContactUpdateInput = z.infer<typeof contactUpdateInputSchema>
-
-export const createOrAddContactInputSchema = contactAddInputSchema.or(idInputSchema)
-export type CreateOrAddContactInput = z.infer<typeof createOrAddContactInputSchema>
-export type CreateOrAddContactInputConditional<
-  T extends CreateOrAddContactInput | IdInput,
-> = T extends ContactAddInput ? ContactAddInput : IdInput
-
-export const contactGetByIdInputSchema = idInputSchema
-export type ContactGetByIdInput = z.infer<typeof contactGetByIdInputSchema>
-
-export const contactDeleteInputSchema = idInputSchema
-export type ContactDeleteInput = z.infer<typeof contactDeleteInputSchema>
-
-export const ContactListInputSchema = z.object({
-  id: idSchema.optional(),
-  name: z.string().optional(),
-})
-export type ContactListInput = z.infer<typeof ContactListInputSchema>
 
 // #endregion
 
@@ -74,7 +41,7 @@ export const contactRouter = router({
     .input(contactGetByIdInputSchema)
     .query(async ({ input }) => await prisma.contact.findUnique({ where: input })),
   list: publicProcedure
-    .input(ContactListInputSchema)
+    .input(contactListInputSchema)
     .query(async ({ input }) => {
       const contacts = await prisma.contact.findMany({ where: input })
 
@@ -130,29 +97,3 @@ export const contactRouter = router({
 //     }
 //   })
 // }
-
-export function connectOrCreateContact(input?: Array<ContactAddInput | IdInput>) {
-  if (!input)
-    return
-
-  return input.map((c) => {
-    let where: Prisma.contactWhereInput | undefined
-    let create: ContactAddInput | undefined
-
-    if ('id' in c)
-      where = { id: c.id }
-
-    if ('name' in c) {
-      create = {
-        name: c.name,
-        phone: c.phone,
-        email: c.email,
-      }
-    }
-
-    return {
-      where,
-      create,
-    }
-  })
-}
