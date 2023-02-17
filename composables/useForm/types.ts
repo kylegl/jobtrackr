@@ -1,13 +1,14 @@
 import type { MaybeRef } from '@vueuse/core'
 import type { ComputedRef, Ref } from 'vue'
 import type { ZodObject, ZodTypeAny } from 'zod'
+import type { Maybe } from '~/composables/types'
 
 export type KeyOfSchema<T extends ZodObject<any>> = T extends ZodObject<infer O> ? keyof O : never
 export type FieldData<T extends ZodObject<any>> = { [K in KeyOfSchema<T>]: FieldCtx }
 
 export interface UseFormInput<T extends ZodObject<any, any, any>> {
   fieldsSchema: T
-  defaultValues?: FieldValues
+  defaultValues?: Maybe<FieldValues>
   validator: ValidationFn
 }
 
@@ -111,4 +112,3 @@ interface ValidationResult {
 }
 
 export type ValidationFn = (...args: any[]) => ValidationResult
-
