@@ -1,4 +1,12 @@
 export default defineNuxtConfig({
+  typescript: {
+    tsConfig: {
+      vueCompilerOptions: {
+        jsxTemplates: true,
+        experimentalRfc436: true,
+      },
+    },
+  },
   build: {
     transpile: ['trpc-nuxt'],
   },
@@ -12,6 +20,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/color-mode',
+    '@vue-macros/nuxt',
   ],
   experimental: {
     reactivityTransform: true,
