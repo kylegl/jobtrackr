@@ -1,10 +1,12 @@
 <script setup lang="ts">
+const { data, isLoading, isFetched } = useEmployeeGetById({ id: 'cldhbu6m3000234dsv2tdgc6m' })
+
 </script>
 
 <template>
-  <div>
+  <div v-if="isFetched">
     <ClientOnly>
-      <Form />
+      <Form :defaultValues="data"/>
 
     </ClientOnly>
   </div>

@@ -1,17 +1,24 @@
 <script setup lang="ts">
+import type { ZodTypeAny } from 'zod'
 import { employeeAddInputSchema } from '~~/server/trpc/schemas'
-const { data, isLoading } = useEmployeeGetById({ id: 'cldhbu6m3000234dsv2tdgc6m' })
-
+const { defaultValues } = defineProps<{ defaultValues: ZodTypeAny }>()
 const { name, disabled } = useForm<typeof employeeAddInputSchema>({
-  defaultValues: data?.value,
+  defaultValues,
   fieldsSchema: employeeAddInputSchema,
   validator: zodValidator,
 })
+
+function testFocus() {
+  // name.setFocus()
+  name.reset()
+}
 </script>
 
 <template>
-  <div v-if="!isLoading">
-    {{ data }}
+  <div>
+    <BaseBtn @click="testFocus">
+      Focus
+    </BaseBtn>
     <FormField
       v-model="name.fieldValue.value"
       :register="name.register" :error-msg="name.errorMsg?.value" :disabled="disabled"
