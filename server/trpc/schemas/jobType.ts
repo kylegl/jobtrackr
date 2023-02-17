@@ -19,8 +19,8 @@ export type JobTypeGetByIdInput = z.infer<typeof jobTypeGetByIdInputSchema>
 export const jobTypeDeleteInputSchema = idInputSchema
 export type JobTypeDeleteInput = z.infer<typeof jobTypeDeleteInputSchema>
 
-export const JobTypeListInputSchema = z.object({
+export const jobTypeListInputSchema = z.object({
   id: idSchema.optional(),
   name: z.string().optional(),
 })
-export type JobTypeListInput = z.infer<typeof JobTypeListInputSchema>
+export type JobTypeListInput = z.infer<typeof jobTypeListInputSchema>

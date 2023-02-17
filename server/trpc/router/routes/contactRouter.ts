@@ -1,5 +1,5 @@
-import type { Prisma } from '@prisma/client'
-import type { ContactAddInput, IdInput } from '~~/server/trpc/schemas'
+// import type { Prisma } from '@prisma/client'
+// import type { ContactAddInput, IdInput } from '~~/server/trpc/schemas'
 import {
   contactAddInputSchema,
   contactDeleteInputSchema,

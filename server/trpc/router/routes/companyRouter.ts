@@ -1,5 +1,6 @@
 import {
   companyAddInputSchema,
+  companyDeleteInputSchema,
   companyGetByIdInputSchema,
   companyListInputSchema,
   companyUpdateInputSchema,

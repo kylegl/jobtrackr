@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { idSchema } from '~~/server/trpc/schemas'
+import { idInputSchema, idSchema } from '~~/server/trpc/schemas'
 
 export const jobTitleAddInputSchema = z.object({
   title: z.string(),

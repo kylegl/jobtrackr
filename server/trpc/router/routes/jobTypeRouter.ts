@@ -1,8 +1,8 @@
 import {
-  JobTypeListInputSchema,
   jobTypeAddInputSchema,
   jobTypeDeleteInputSchema,
   jobTypeGetByIdInputSchema,
+  jobTypeListInputSchema,
   jobTypeUpdateInputSchema,
 } from '~~/server/trpc/schemas'
 import { prisma } from '~~/server/prisma/prisma'
@@ -30,7 +30,7 @@ export const jobTypeRouter = router({
     .input(jobTypeGetByIdInputSchema)
     .query(async ({ input }) => await prisma.jobType.findUnique({ where: input })),
   list: publicProcedure
-    .input(JobTypeListInputSchema)
+    .input(jobTypeListInputSchema)
     .query(async ({ input }) => {
       const jobType = await prisma.jobType.findMany({ where: input })
 
