@@ -16,12 +16,12 @@ TSchema extends ZodObject<any>,
   const { defaultValue, options } = input
 
   const { callback, schema, validate = true } = options.validation
-  const initValue = ref(defaultValue)
-  const fieldValue = ref(defaultValue)
+  // debugger
+  const fieldValue = ref(unref(defaultValue))
   const fieldNode = ref<FieldElement | null>(null)
   const { focused } = useFocus(fieldNode)
   const isTouched = ref(false)
-  const isDirty = computed(() => defaultValue !== fieldValue.value)
+  const isDirty = computed(() => unref(defaultValue) !== fieldValue.value)
 
   // TODO add option to add custom showError event
   const showError = computed(() => isTouched.value)
@@ -56,11 +56,18 @@ TSchema extends ZodObject<any>,
   }
 
   function reset() {
-    fieldValue.value = defaultValue
+    fieldValue.value = unref(defaultValue)
     isTouched.value = false
   }
 
   const cleanup = useEventListener(fieldNode, 'blur', () => isTouched.value = true)
+
+  if (isRef(defaultValue)) {
+    watch(defaultValue, () => {
+      if (!isTouched.value)
+        reset()
+    })
+  }
 
   onUnmounted(() => {
     cleanup()
@@ -76,7 +83,6 @@ TSchema extends ZodObject<any>,
     register,
     reset,
     setFocus,
-    initValue,
   }
 }
 

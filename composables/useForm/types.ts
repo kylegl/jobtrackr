@@ -8,7 +8,7 @@ export type FieldData<T extends ZodObject<any>> = { [K in KeyOfSchema<T>]: Field
 
 export interface UseFormInput<T extends ZodObject<any, any, any>> {
   fieldsSchema: T
-  defaultValues?: MaybeRef<Maybe<FieldValues>>
+  defaultValues: MaybeRef<FieldValues>
   validator: ValidationFn
 }
 
@@ -41,7 +41,7 @@ export type OnSubmitFn = (cb: () => any) => () => any
 
 export interface UseFieldInput<TSchema extends ZodObject<any>> {
   fieldName?: string
-  defaultValue?: NativeFieldValue
+  defaultValue?: MaybeRef<NativeFieldValue>
   ctx?: FormCtx<TSchema>
   options: UseFieldOptions
 

@@ -1,5 +1,5 @@
 import type { ZodObject } from 'zod'
-import type { MaybeRef } from '@vueuse/core'
+import type { MaybeComputedRef, MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue'
 import { isReactive, isRef, unref } from 'vue'
 import type { ReactiveVariable } from 'vue/macros'
@@ -39,37 +39,39 @@ export function unReactify<T>(val: ReactiveVariable<T> | Ref<T> | T) {
   return val
 }
 
-export function useWatchAndClone<T>(
-  source: MaybeRef<T> | ReactiveVariable<T>,
-  target: Ref<T>,
-  options: WatchAndCloneOptions<T>,
-  syncTarget?: Ref<() => void | undefined>,
+export function cloneFnObjAssign<T>(source: T): T {
+  return Object.assign({}, source)
+}
+
+export function useClonedAsync<T>(
+  source: MaybeComputedRef<T>,
+  options: WatchAndCloneOptions<T> = {},
 ) {
   const {
-    cloneFn = (val: T) => ({ ...val }),
+    cloneFn = cloneFnObjAssign,
+    deep = true,
+    immediate = true,
   } = options
+  const cloned = ref<T>({} as T)
 
-  if (!source)
-    return
+  function sync() {
+    if (!unref(source))
+      return
 
+    cloned.value = cloneFn(unref(source))
+  }
+
+  // watch source for ref or proxy
   const watchSource = isRef(source) ? source : () => source
 
-  watch(watchSource, () => {
-    const rawSource = unReactify(source)
-
-    target.value = cloneFn(rawSource)
-
-    // sync function
-    if (isRef(syncTarget)) {
-      syncTarget.value = () => {
-        target.value = cloneFn(rawSource)
-      }
-    }
-  },
-  {
+  watch(watchSource, sync, {
     ...options,
-    onTrigger(e) {
-      debugger
-    },
+    deep,
+    immediate,
+    // onTrigger(e) {
+    //   debugger
+    // },
   })
+
+  return { cloned, sync }
 }
