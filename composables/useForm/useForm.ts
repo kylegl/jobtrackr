@@ -17,13 +17,25 @@ export function useForm<
   defaultValues,
   validator,
 }: UseFormInput<TSchema>): UseFormOutput<TSchema> {
+  debugger
+  console.log('defaultValues', defaultValues)
+
+  const initValues = ref()
+  const sync = ref()
+
+  useWatchAndClone(defaultValues, initValues, {
+    immediate: true,
+    deep: true,
+    cloneFn: unReactify,
+  }, sync)
+
   const {
     isLoading,
     isSubmitting,
     submitCount,
     disabled,
     fields,
-  } = getFormContext({ fieldsSchema, defaultValues, validator })
+  } = getFormContext({ fieldsSchema, defaultValues: initValues, validator })
 
   const isDirty = computed(() => hasAny('isDirty', true, fields))
   const isValid = computed(() => hasEvery('isValid', true, fields))
@@ -33,7 +45,6 @@ export function useForm<
 
     return cb()
   }
-
   return {
     isDirty,
     isLoading,
@@ -43,6 +54,7 @@ export function useForm<
     disabled,
     ...fields,
     fields,
+    initValues,
   }
 }
 
@@ -80,7 +92,7 @@ function getFieldsContext<
 >({ fieldsSchema, defaultValues, validator }: UseFormInput<TSchema>) {
   const fieldCtxMap = Object.keys(fieldsSchema.shape)
     .reduce<FieldData<TSchema>>((acc, key) => {
-      const defaultValue = defaultValues?.[key]
+      const defaultValue = defaultValues.value?.[key]
       const schema = fieldsSchema.shape[key] as ZodTypeAny
       const fieldCtx = useField({
         defaultValue,
@@ -96,4 +108,8 @@ function getFieldsContext<
       return acc
     }, {} as FieldData<TSchema>)
   return fieldCtxMap
+}
+
+function checkPromise(value) {
+  return Promise.resolve(value) === value
 }

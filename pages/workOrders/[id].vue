@@ -5,7 +5,7 @@ const router = useRouter()
 
 // TODO added logic for new wo or existing wo. Need to put form in edit mode when new.
 
-const wo = $ref<WorkorderType | undefined>()
+let wo = $ref<WorkorderType | undefined>()
 
 // const { state, isNewAndClean, isSafeToClose } = storeToRefs(useWoStore())
 // const { saveWo, editWo, deleteWo, resetStore } = useWoStore()

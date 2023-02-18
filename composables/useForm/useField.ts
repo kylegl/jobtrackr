@@ -10,10 +10,13 @@ import type {
   UseFieldInput,
 } from './types'
 
-export function useField<TSchema extends ZodObject<any>>(input: UseFieldInput<TSchema>): FieldCtx {
+export function useField<
+TSchema extends ZodObject<any>,
+>(input: UseFieldInput<TSchema>): FieldCtx {
   const { defaultValue, options } = input
 
   const { callback, schema, validate = true } = options.validation
+  const initValue = ref(defaultValue)
   const fieldValue = ref(defaultValue)
   const fieldNode = ref<FieldElement | null>(null)
   const { focused } = useFocus(fieldNode)
@@ -73,6 +76,7 @@ export function useField<TSchema extends ZodObject<any>>(input: UseFieldInput<TS
     register,
     reset,
     setFocus,
+    initValue,
   }
 }
 

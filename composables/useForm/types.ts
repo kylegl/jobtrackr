@@ -1,5 +1,5 @@
-import type { MaybeRef } from '@vueuse/core'
-import type { ComputedRef, Ref } from 'vue'
+import type { CloneFn, MaybeRef } from '@vueuse/core'
+import type { ComputedRef, Ref, WatchOptions } from 'vue'
 import type { ZodObject, ZodTypeAny } from 'zod'
 import type { Maybe } from '~/composables/types'
 
@@ -8,7 +8,7 @@ export type FieldData<T extends ZodObject<any>> = { [K in KeyOfSchema<T>]: Field
 
 export interface UseFormInput<T extends ZodObject<any, any, any>> {
   fieldsSchema: T
-  defaultValues?: Maybe<FieldValues>
+  defaultValues?: MaybeRef<Maybe<FieldValues>>
   validator: ValidationFn
 }
 
@@ -112,3 +112,11 @@ interface ValidationResult {
 }
 
 export type ValidationFn = (...args: any[]) => ValidationResult
+
+export interface WatchAndCloneOptions<T> extends WatchOptions {
+  cloneFn?: CloneOrTransformFn<T>
+}
+
+type CloneOrTransformFn<T> = TransformFn | CloneFn<T>
+
+type TransformFn = <T>() => T
