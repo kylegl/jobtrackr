@@ -1,8 +1,8 @@
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { ZodObject, ZodTypeAny } from 'zod'
 import type {
   FieldData,
-  FormCtx,
+  GetFieldsInput,
   KeyOfSchema,
   UseFormInput,
   UseFormOutput,
@@ -14,76 +14,52 @@ export function useForm<
   TSchema extends ZodObject<any>,
 >({
   fieldsSchema,
-  defaultValues,
+  initialValues,
   validator,
 }: UseFormInput<TSchema>): UseFormOutput<TSchema> {
-  const { cloned: initValues, sync } = useClonedAsync(defaultValues)
+  const { cloned: clonedInitialValues } = useClonedAsync(initialValues)
 
-  const {
-    isLoading,
-    isSubmitting,
-    submitCount,
-    disabled,
-    fields,
-  } = getFormContext({ fieldsSchema, defaultValues: initValues, validator })
+  const fields = getFieldsContext({ fieldsSchema, clonedInitialValues, validator })
+  const _internalState = reactive({
+    submitCount: 0,
+  })
 
-  const isDirty = computed(() => hasAny('isDirty', true, fields))
-  const isValid = computed(() => hasEvery('isValid', true, fields))
+  const state = toRefs({
+    disabled: false,
+    isDirty: computed(() => hasAny('isDirty', true, fields)),
+    isLoading: true,
+    isSubmitted: false,
+    isSubmitting: false,
+    isSubmitSuccessful: false,
+    isValid: computed(() => hasEvery('isValid', true, fields)),
+  })
 
   function onSubmit(cb: () => any) {
-    submitCount.value++
+    _internalState.submitCount++
 
     return cb()
   }
-  return {
-    isDirty,
-    isLoading,
-    isSubmitting,
-    isValid,
-    onSubmit,
-    disabled,
-    ...fields,
-    fields,
-    initValues,
-    sync,
+
+  function reset() {
+    Object.keys(fields).forEach((f) => {
+      fields[f as keyof FieldData<TSchema>].reset()
+    })
   }
-}
-
-function getFormContext<
-  TSchema extends ZodObject<any, any, any>,
->({
-  fieldsSchema,
-  defaultValues,
-  validator,
-}: UseFormInput<TSchema>):
-  Omit<FormCtx<TSchema>, 'isDirty' | 'isValid' | 'onSubmit'> {
-  const isValidating = ref(false)
-  const isLoading = ref(true)
-  const isSubmitted = ref(false)
-  const isSubmitting = ref(false)
-  const isSubmitSuccessful = ref(false)
-  const submitCount = ref(0)
-  const disabled = ref(false)
-  const fields = getFieldsContext({ fieldsSchema, defaultValues, validator })
-
   return {
-    isValidating,
-    isLoading,
-    isSubmitted,
-    isSubmitting,
-    isSubmitSuccessful,
-    submitCount,
-    disabled,
+    ...state,
+    ...fields,
+    onSubmit,
     fields,
+    reset,
   }
 }
 
 function getFieldsContext<
   TSchema extends ZodObject<any>,
->({ fieldsSchema, defaultValues, validator }: UseFormInput<TSchema>) {
+>({ fieldsSchema, clonedInitialValues, validator }: GetFieldsInput<TSchema>) {
   const fieldCtxMap = Object.keys(fieldsSchema.shape)
     .reduce<FieldData<TSchema>>((acc, key) => {
-      const defaultValue = computed(() => defaultValues.value?.[key])
+      const defaultValue = computed(() => clonedInitialValues.value?.[key])
       const schema = fieldsSchema.shape[key] as ZodTypeAny
       const fieldCtx = useField({
         defaultValue,

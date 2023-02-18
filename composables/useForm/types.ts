@@ -1,48 +1,61 @@
 import type { CloneFn, MaybeRef } from '@vueuse/core'
 import type { ComputedRef, Ref, WatchOptions } from 'vue'
 import type { ZodObject, ZodTypeAny } from 'zod'
-import type { Maybe } from '~/composables/types'
 
 export type KeyOfSchema<T extends ZodObject<any>> = T extends ZodObject<infer O> ? keyof O : never
 export type FieldData<T extends ZodObject<any>> = { [K in KeyOfSchema<T>]: FieldCtx }
 
 export interface UseFormInput<T extends ZodObject<any, any, any>> {
   fieldsSchema: T
-  defaultValues: MaybeRef<FieldValues>
+  initialValues?: MaybeRef<FieldValues>
   validator: ValidationFn
 }
 
-export interface FormCtx<TSchema extends ZodObject<any>> {
-  isValid: ComputedRef<boolean>
-  isValidating: Ref<boolean>
-  isLoading: Ref<boolean>
-  isSubmitted: Ref<boolean>
-  isSubmitting: Ref<boolean>
-  isSubmitSuccessful: Ref<boolean>
-  submitCount: Ref<number>
-  onSubmit: OnSubmitFn
-  disabled: Ref<boolean>
-  isDirty: ComputedRef<boolean>
-  fields: FieldData<TSchema>
+export interface GetFieldsInput<T extends ZodObject<any>> {
+  fieldsSchema: T
+  clonedInitialValues: MaybeRef<FieldValues>
+  validator: ValidationFn
 }
 
-export type PublicFormCtx<TSchema extends ZodObject<any>> = Pick<FormCtx<TSchema>,
-  | 'isDirty'
-  | 'onSubmit'
-  | 'disabled'
-  | 'isLoading'
-  | 'isSubmitting'
-  | 'isValid'
-> & FieldData<TSchema>
+export interface FormState {
+  isValid: ComputedRef<boolean>
+  isLoading: boolean
+  isSubmitted: boolean
+  isSubmitting: boolean
+  isSubmitSuccessful: boolean
+  disabled: boolean
+  isDirty: ComputedRef<boolean>
+}
 
-export type UseFormOutput<TSchema extends ZodObject<any>> = PublicFormCtx<TSchema>
+export interface InternalFormState {
+  submitCount: number
+}
+
+export type PublicFormCtx<
+  TSchema extends ZodObject<any>,
+  T extends FormState,
+  K extends keyof T,
+  > = Record<K, Ref<T[K]>> & FieldData<TSchema>
+
+export interface UseFormFuncs {
+  onSubmit: (cb: () => any) => void
+  reset: () => void
+}
+
+export type UseFormOutput<
+  TSchema extends ZodObject<any>,
+  > = UseFormFuncs & PublicFormCtx<
+    TSchema,
+    FormState,
+    keyof FormState
+  >
 
 export type OnSubmitFn = (cb: () => any) => () => any
 
 export interface UseFieldInput<TSchema extends ZodObject<any>> {
   fieldName?: string
   defaultValue?: MaybeRef<NativeFieldValue>
-  ctx?: FormCtx<TSchema>
+  ctx?: FormState
   options: UseFieldOptions
 
 }

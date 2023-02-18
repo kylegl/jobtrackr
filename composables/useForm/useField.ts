@@ -16,7 +16,6 @@ TSchema extends ZodObject<any>,
   const { defaultValue, options } = input
 
   const { callback, schema, validate = true } = options.validation
-  // debugger
   const fieldValue = ref(unref(defaultValue))
   const fieldNode = ref<FieldElement | null>(null)
   const { focused } = useFocus(fieldNode)
