@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { MaybeRef } from '@vueuse/core'
 import type { NativeFieldValue } from '~/composables/useForm/types'
 
 const props = withDefaults(defineProps<{
   modelValue?: NativeFieldValue
   placeholder?: string
-  disabled?: boolean
+  disabled?: MaybeRef<boolean>
   label?: string
   type?: string
   error?: boolean
@@ -40,7 +41,7 @@ defineExpose({
       <slot name="before" />
       <input
         ref="input" v-model="val" w-full bg-transparent in-out placeholder:t-brand1 placeholder:text-op-40
-        class="focus:outline-none" :placeholder="placeholder" :type="type" :disabled="disabled"
+        class="focus:outline-none" :placeholder="placeholder" :type="type" :disabled="unref(disabled)"
         @keydown.enter="emit('enter')" @focus="emit('focus')" @blur="emit('blur')"
       >
       <slot name="after" />

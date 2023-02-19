@@ -3,7 +3,7 @@ import { getSeeds } from './mockDataSchemas'
 
 const prisma = new PrismaClient()
 
-async function main() {
+export async function main() {
   const data = getSeeds()
   await asyncForEach(data, async (seed) => {
     const { model, action, prismaData } = seed

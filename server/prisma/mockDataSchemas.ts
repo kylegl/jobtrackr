@@ -19,9 +19,9 @@ const defaultStringMap = {
   closedAt: () => faker.helpers.maybe(() => faker.date.soon(parseInt(faker.random.numeric(3))), { probability: 0.1 }),
   total: () => parseInt(faker.random.numeric(5)),
   hours: () => parseInt(faker.random.numeric(3)),
-  typeId: () => faker.helpers.arrayElement(['cldjui2dy0000345eu82a32ya', 'cldjuk5ah000034fzvzw83z6j']),
-  companyId: () => faker.helpers.arrayElement(['cldjts4sw000s34ynorfyv1i4', 'cldjts4so000e34yn2ukpmved', 'cldjts4se000034yn28byetwa']),
-  propertyId: () => faker.helpers.arrayElement(['cldjucf00000i34icr0kmttjr', 'cldjucezr000g34ic51fwhp7i', 'cldjucezk000e34ico6to0lsf', 'cldjuceze000c34ic6ltztltg', 'cldjucez6000a34ic12v7c8pr', 'cldjuceyy000834ic0nafyq19', 'cldjuceyl000434ic48kop57z']),
+  typeId: () => faker.helpers.arrayElement(['clecc75j5000634rv8umrwtjb', 'clecc8atx000c34rvqsswczea']),
+  companyId: () => faker.helpers.arrayElement(['cleccevee00003481f8y8spa7', 'cleccevmo000e34814t4hcnr3', 'cleccevsp000s34814fhbd6rf']),
+  propertyId: () => faker.helpers.arrayElement(['cleccfqnb00163481pf6sfsfr', 'cleccfqr200183481kaiujbcx', 'cleccfqth001a3481bl47tl5n', 'cleccfqyg001e3481wy5bckkm', 'cleccfr0x001g34813n4puiu7', 'cleccfr3e001i34817s027uar', 'cleccfr5s001k3481teoizu0h']),
   notes: () => faker.lorem.sentences(),
 }
 
@@ -49,7 +49,7 @@ const mockJobType: MockSchema = {
 
 const mockEmployeeOptions = {
   stringMap: {
-    titleId: () => faker.helpers.unique(['cldhbu6m3000034dsxicl4bwj', 'cldhbu6mf002c34dsnj81akej']),
+    title: () => faker.helpers.arrayElement(['Painter', 'Manager', 'Supervisor']),
     ...defaultStringMap,
   },
 }
@@ -58,15 +58,13 @@ const mockEmployeeInputSchema = z.object({
   name: z.string(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
-  titleId: z.string(),
+  title: z.string(),
   isEmployed: z.boolean(),
 })
 
 const mockEmployee: MockSchema = {
   schema: mockEmployeeInputSchema,
-  options: {
-    stringMap: defaultStringMap,
-  },
+  options: mockEmployeeOptions,
 }
 
 const mockContactInputSchema = z.object({
@@ -191,21 +189,10 @@ const mockJob: MockSchema = {
 const seedMockDataSchema: MockDataSchema[] = [
   // {
   //   model: 'jobTitle',
-  //   action: 'upsert',
+  //   action: 'create',
   //   pk: 'title',
   //   mock: mockJobTitle,
   //   num: 3,
-  //   subMocks: [
-  //     {
-  //       key: 'employees',
-  //       data: {
-  //         pk: 'name',
-  //         model: 'employee',
-  //         mock: mockEmployee,
-  //         num: 10,
-  //       },
-  //     },
-  //   ],
   // },
   // {
   //   model: 'jobType',
@@ -218,6 +205,7 @@ const seedMockDataSchema: MockDataSchema[] = [
   //   model: 'company',
   //   pk: 'name',
   //   num: 3,
+  //   action: 'upsert',
   //   mock: mockCompany,
   //   subMocks: [
   //     {
@@ -243,6 +231,7 @@ const seedMockDataSchema: MockDataSchema[] = [
   //   model: 'employee',
   //   action: 'create',
   //   pk: 'id',
+  //   mock: mockEmployee,
   //   num: 20,
   // },
   // {
@@ -252,13 +241,13 @@ const seedMockDataSchema: MockDataSchema[] = [
   //   mock: mockBid,
   //   num: 5,
   // },
-  {
-    model: 'job',
-    action: 'create',
-    pk: 'id',
-    mock: mockJob,
-    num: 10,
-  },
+  // {
+  //   model: 'job',
+  //   action: 'create',
+  //   pk: 'id',
+  //   mock: mockJob,
+  //   num: 10,
+  // },
 ]
 
 // utils
