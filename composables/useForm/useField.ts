@@ -8,7 +8,7 @@ import type {
   FieldElement,
   RegisterInput,
   UseFieldInput,
-} from './types'
+} from '~/composables/useForm/types'
 
 export function useField<
 TSchema extends ZodObject<any>,
@@ -46,7 +46,6 @@ TSchema extends ZodObject<any>,
     }
 
     fieldNode.value = el as FieldElement
-
     return fieldNode
   }
 
@@ -61,6 +60,7 @@ TSchema extends ZodObject<any>,
 
   const cleanup = useEventListener(fieldNode, 'blur', () => isTouched.value = true)
 
+  // TODO: add way to disable this, or set custom sync events
   if (isRef(defaultValue)) {
     watch(defaultValue, () => {
       if (!isTouched.value)
@@ -88,3 +88,4 @@ TSchema extends ZodObject<any>,
 export function setTouched(isTouched: Ref<boolean>) {
   isTouched.value = true
 }
+

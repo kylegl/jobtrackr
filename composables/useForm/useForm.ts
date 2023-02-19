@@ -24,7 +24,7 @@ export function useForm<
     submitCount: 0,
   })
 
-  const state = toRefs({
+  const state = reactive({
     disabled: false,
     isDirty: computed(() => hasAny('isDirty', true, fields)),
     isLoading: true,
@@ -45,8 +45,9 @@ export function useForm<
       fields[f as keyof FieldData<TSchema>].reset()
     })
   }
+
   return {
-    ...state,
+    ...toRefs(state),
     ...fields,
     onSubmit,
     fields,
