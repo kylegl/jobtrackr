@@ -1,21 +1,11 @@
 <script setup lang="ts">
-import type { MaybeRef } from '@vueuse/core'
-import { z } from 'zod'
-
 const isLoading = true
 const searchResults = $ref([])
 
 // const rawWos = $computed(() => workOrders ?? [])
 // const wos = $computed(() => searchResults?.length ? searchResults : rawWos)
-const filteredWos = $ref()
-const sortedWos = $ref()
-const testVal = ref('hello yuo')
-const firstName = ref()
-const inputEl = $ref(null)
-const { focused } = useFocus($$(inputEl))
-const testErr = $ref()
-
-const { register } = useController($$(firstName))
+const filteredWos = $ref([])
+const sortedWos = $ref([])
 
 // function focusIt() {
 //   console.log('preFocusValue', focused.value)
@@ -33,31 +23,6 @@ const { register } = useController($$(firstName))
 //   console.log('value', firstName?.val)
 //   console.log(focused.value)
 // })
-
-function useController(target: MaybeRef<any>) {
-  function register(el: HTMLElement) {
-    target.value = el
-  }
-
-  return {
-    register,
-  }
-}
-
-const name = $ref()
-const myForm = z.object({ name: z.string({ required_error: 'We need your goddamn name', invalid_type_error: 'Your name ain\'t no number homie' }).min(3, { message: 'Name must be at least 3 characters' }) })
-
-function onSubmit() {
-  const formData = { name }
-  console.log('form data', formData)
-  const data = myForm.safeParse(formData)
-
-  if (!data.success) {
-    const error = data.error.format()
-
-    console.log('error', error.name?._errors)
-  }
-}
 </script>
 
 <template>
@@ -92,12 +57,13 @@ function onSubmit() {
 
       <Divider w="full" h=".25" />
     </section>
-    <BaseBtn @click="onSubmit">
-      submit
+    <BaseBtn @click="'hi'">
+      <ToolTip placement="bottom" content="HELLO">
+        <div>
+          submit
+        </div>
+      </ToolTip>
     </BaseBtn>
-
-    <!-- <VInput :ref="el => register(el)" v-model="testVal" :error-msg="testErr" /> -->
-    <input :ref="el => firstName = el" v-model="name" text-black>
 
     <!-- <section>
       <Loading v-if="isLoading" absolute-center />
