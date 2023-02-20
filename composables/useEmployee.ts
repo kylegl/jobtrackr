@@ -1,13 +1,21 @@
 import type { TRPCClientError } from '@trpc/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { inferRouterOutputs } from '@trpc/server'
-import type { DeleteEmployeeInput, EmployeeAddInput, EmployeeGetByIdInput, EmployeeListInput } from '~~/server/trpc/router/routes/employeeRouter'
+import type {
+  EmployeeAddInput,
+  EmployeeDeleteInput,
+  EmployeeGetByIdInput,
+  EmployeeListInput,
+  EmployeeUpdateInput,
+} from '~~/server/trpc/schemas'
 import type { AppRouter } from '~~/server/trpc/router/appRouter'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 type ErrorOutput = TRPCClientError<AppRouter>
 type CreateEmployeeOutput = RouterOutput['employee']['add']
 type DeleteEmployeeOutput = RouterOutput['employee']['delete']
+type UpdateEmployeeOutput = RouterOutput['employee']['update']
+type GetEmployeeByIdOutput = RouterOutput['employee']['getById']
 
 export function useEmployeeAdd() {
   const vueQueryClient = useQueryClient()
@@ -26,7 +34,7 @@ export function useEmployeeAdd() {
       }
 
       vueQueryClient.setQueryData(['employee', 'list'],
-        (old) => {
+        (old: any) => {
           return old ? [newEmployee, ...old] : undefined
         },
       )
@@ -41,8 +49,8 @@ export function useEmployeeList(input: EmployeeListInput) {
   const { $client } = useNuxtApp()
 
   const queryFn = async () => {
-    const { data } = await $client.employee.list.useQuery(input)
-    return data
+    const { data, error } = await $client.employee.list.useQuery(input)
+    return { data, error }
   }
   return useQuery({ queryKey: ['employee', 'list', input], queryFn })
 }
@@ -51,7 +59,7 @@ export function useEmployeeDelete() {
   const { $client } = useNuxtApp()
   const vueQueryClient = useQueryClient()
 
-  const mutationFn = async (input: DeleteEmployeeInput) => {
+  const mutationFn = async (input: EmployeeDeleteInput) => {
     return useAsyncData<DeleteEmployeeOutput, ErrorOutput>
     (
       () => $client.employee.delete.mutate(input),
@@ -87,4 +95,37 @@ export function useEmployeeGetById(input: EmployeeGetByIdInput) {
   }
 
   return useQuery({ queryKey: ['employee', 'getById', input], queryFn })
+}
+
+export function useEmployeeUpdate() {
+  const { $client } = useNuxtApp()
+  const vueQueryClient = useQueryClient()
+
+  async function mutationFn(updatedEmployee: EmployeeUpdateInput) {
+    useAsyncData<
+      UpdateEmployeeOutput,
+      ErrorOutput
+    >(() => $client.employee.update.mutate(updatedEmployee))
+  }
+
+  return useMutation({
+    mutationFn,
+    onMutate: async (updatedEmployee) => {
+      await vueQueryClient.cancelQueries(['employee'])
+      const previousEmployee = vueQueryClient
+        .getQueryData<GetEmployeeByIdOutput>(['employee', 'getById', updatedEmployee.id])
+
+      vueQueryClient.setQueryData(
+        ['employee', 'getById', updatedEmployee.id],
+        updatedEmployee,
+      )
+
+      return { previousEmployee, updatedEmployee }
+    },
+    onError: (err, { id }, context) => {
+      vueQueryClient.setQueryData(['employee', 'getById', id], context?.previousEmployee)
+      return err
+    },
+    onSettled: () => vueQueryClient.invalidateQueries({ queryKey: ['employee'] }),
+  })
 }
