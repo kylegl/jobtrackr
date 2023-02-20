@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { MaybeRef } from '@vueuse/core'
 import type { NativeFieldValue, RegisterFunction } from '~~/composables/useForm/types'
 
 const props = defineProps<{
   modelValue?: NativeFieldValue
   errorMsg?: string
   register: RegisterFunction
-  disabled: boolean
+  disabled: MaybeRef<boolean>
 }>()
 const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
