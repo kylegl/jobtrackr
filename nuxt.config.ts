@@ -28,6 +28,7 @@ export default defineNuxtConfig({
   },
   css: [
     '@unocss/reset/tailwind.css',
+    'floating-vue/dist/style.css',
   ],
   colorMode: {
     classSuffix: '',

@@ -34,6 +34,7 @@
     "@vueuse/nuxt": "^9.12.0",
     "dotenv": "^16.0.3",
     "eslint": "^8.33.0",
+    "floating-vue": "2.0.0-beta.20",
     "fuse.js": "^6.6.2",
     "nuxt": "npm:nuxt3@latest",
     "prisma": "^4.9.0",
