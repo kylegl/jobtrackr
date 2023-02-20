@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <div >
+  <div>
     <ClientOnly>
-      <Form  />
+      <Form />
     </ClientOnly>
   </div>
 </template>

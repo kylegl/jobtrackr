@@ -35,7 +35,7 @@ export type EmployeeGetByIdInput = z.infer<typeof employeeGetByIdInputSchema>
 export const employeeDeleteInputSchema = z.object({
   id: idSchema,
 })
-export type employeeDeleteInput = z.infer<typeof employeeDeleteInputSchema>
+export type EmployeeDeleteInput = z.infer<typeof employeeDeleteInputSchema>
 
 export const employeeListInputSchema = z.object({
   titleId: idSchema.optional(),
