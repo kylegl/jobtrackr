@@ -35,7 +35,7 @@
     "dotenv": "^16.0.3",
     "eslint": "^8.33.0",
     "fuse.js": "^6.6.2",
-    "nuxt": "3.2.0",
+    "nuxt": "npm:nuxt3@latest",
     "prisma": "^4.9.0",
     "quill-delta-to-html": "^0.12.1",
     "typescript": "^4.9.5",
