@@ -1,11 +1,12 @@
+import type { UnwrapRef } from 'vue'
 import { computed } from 'vue'
 import type { ZodObject, ZodTypeAny } from 'zod'
 import type {
+  FieldCtx,
   FieldData,
   GetFieldsInput,
   KeyOfSchema,
   UseFormInput,
-  UseFormOutput,
 } from './types'
 import { useField } from './useField'
 import { hasAny, hasEvery } from './utils'
@@ -16,26 +17,27 @@ export function useForm<
   fieldsSchema,
   initialValues,
   validator,
-}: UseFormInput<TSchema>): UseFormOutput<TSchema> {
+}: UseFormInput<TSchema>) {
   const { cloned: clonedInitialValues } = useClonedAsync(initialValues)
 
   const fields = getFieldsContext({ fieldsSchema, clonedInitialValues, validator })
-  const _internalState = reactive({
-    submitCount: 0,
-  })
+  const dirtyFields = getDirtyFields(fields)
+  const _internalState = {
+    submitCount: ref(0),
+  } as const
 
-  const state = reactive({
-    disabled: false,
+  const state = {
+    disabled: ref(false),
     isDirty: computed(() => hasAny('isDirty', true, fields)),
-    isLoading: true,
-    isSubmitted: false,
-    isSubmitting: false,
-    isSubmitSuccessful: false,
+    isLoading: ref(true),
+    isSubmitted: ref(false),
+    isSubmitting: ref(false),
+    isSubmitSuccessful: ref(false),
     isValid: computed(() => hasEvery('isValid', true, fields)),
-  })
+  } as const
 
   function onSubmit(cb: () => any) {
-    _internalState.submitCount++
+    _internalState.submitCount.value++
 
     return cb()
   }
@@ -44,14 +46,15 @@ export function useForm<
     Object.keys(fields).forEach((f) => {
       fields[f as keyof FieldData<TSchema>].reset()
     })
+    _internalState.submitCount.value = 0
   }
 
   return {
-    ...toRefs(state),
+    ...state,
     ...fields,
     onSubmit,
-    fields,
     reset,
+    dirtyFields,
   }
 }
 
@@ -76,4 +79,23 @@ function getFieldsContext<
       return acc
     }, {} as FieldData<TSchema>)
   return fieldCtxMap
+}
+
+// TODO: fix dirty fields types
+export function getDirtyFields<TSchema extends ZodObject<any>>(fields: FieldData<TSchema>) {
+  return computed(() => {
+    const keys = Object.keys(fields)
+    const dirtyFields: Partial<Record<KeyOfSchema<TSchema>, UnwrapRef<FieldCtx['fieldValue']>>> = {}
+
+    for (const key of keys) {
+      if (fields[key as KeyOfSchema<TSchema>].isDirty.value && isHasOwn(fields, key))
+        (dirtyFields as any)[key] = fields[key].fieldValue.value
+    }
+
+    return readonly(dirtyFields)
+  })
+}
+
+export function isHasOwn<T extends {}>(object: T, key: PropertyKey): key is keyof T {
+  return Object.prototype.hasOwnProperty.call(object, key)
 }

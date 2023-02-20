@@ -5,54 +5,48 @@ import type { ZodObject, ZodTypeAny } from 'zod'
 export type KeyOfSchema<T extends ZodObject<any>> = T extends ZodObject<infer O> ? keyof O : never
 export type FieldData<T extends ZodObject<any>> = { [K in KeyOfSchema<T>]: FieldCtx }
 
-export interface UseFormInput<T extends ZodObject<any, any, any>> {
-  fieldsSchema: T
+export interface UseFormInput<TSchema extends ZodObject<any, any, any>> {
+  fieldsSchema: TSchema
   initialValues?: MaybeRef<FieldValues>
   validator: ValidationFn
 }
 
-export interface GetFieldsInput<T extends ZodObject<any>> {
-  fieldsSchema: T
+export interface GetFieldsInput<TSchema extends ZodObject<any>> {
+  fieldsSchema: TSchema
   clonedInitialValues: MaybeRef<FieldValues>
   validator: ValidationFn
 }
 
 export interface FormState {
   isValid: ComputedRef<boolean>
-  isLoading: boolean
-  isSubmitted: boolean
-  isSubmitting: boolean
-  isSubmitSuccessful: boolean
-  disabled: boolean
+  isLoading: Ref<boolean>
+  isSubmitted: Ref<boolean>
+  isSubmitting: Ref<boolean>
+  isSubmitSuccessful: Ref<boolean>
+  disabled: Ref<boolean>
   isDirty: ComputedRef<boolean>
 }
 
 export interface InternalFormState {
-  submitCount: number
+  submitCount: Ref<number>
 }
-
-export type PublicFormCtx<
-  TSchema extends ZodObject<any>,
-  T extends FormState,
-  K extends keyof T,
-  > = Record<K, Ref<T[K]>> & FieldData<TSchema>
 
 export interface UseFormFuncs {
   onSubmit: (cb: () => any) => void
   reset: () => void
 }
 
-export type UseFormOutput<
-  TSchema extends ZodObject<any>,
-  > = UseFormFuncs & PublicFormCtx<
-    TSchema,
-    FormState,
-    keyof FormState
-  >
+// export interface UseFormOutput<TSchema extends ZodObject<any>>
+//   extends UseFormFuncs {
+//   dirtyFields: ReturnType<typeof getDirtyFields>
+//   & FieldData<TSchema>
+// }
+
+export type DirtyFields<TSchema extends ZodObject<any>> = ComputedRef<Record<KeyOfSchema<TSchema>, NativeFieldValue>> | {}
 
 export type OnSubmitFn = (cb: () => any) => () => any
 
-export interface UseFieldInput<TSchema extends ZodObject<any>> {
+export interface UseFieldInput {
   fieldName?: string
   defaultValue?: MaybeRef<NativeFieldValue>
   ctx?: FormState
