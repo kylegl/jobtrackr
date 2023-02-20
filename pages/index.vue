@@ -96,7 +96,7 @@ function onSubmit() {
       submit
     </BaseBtn>
 
-    <!-- <TextInput :ref="el => register(el)" v-model="testVal" :error-msg="testErr" /> -->
+    <!-- <VInput :ref="el => register(el)" v-model="testVal" :error-msg="testErr" /> -->
     <input :ref="el => firstName = el" v-model="name" text-black>
 
     <!-- <section>

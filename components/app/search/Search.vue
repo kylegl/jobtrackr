@@ -28,7 +28,7 @@ const searchResult = $computed(() => {
 
 <template>
   <div>
-    <TextInput
+    <VInput
       v-model="searchValue"
       type="text"
       place-holder-text="Search..."
@@ -41,6 +41,6 @@ const searchResult = $computed(() => {
           <Icon icon-search fluent-search-12-regular icon-btn m-auto  mx2 />
         </button>
       </template>
-    </TextInput>
+    </VInput>
   </div>
 </template>
