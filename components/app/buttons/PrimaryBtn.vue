@@ -6,7 +6,6 @@ const emit = defineEmits(['click'])
 <template>
   <BaseBtn
     border-base bg-bg-lit-a dark:bg-bg-drk-b text-norm op90
-    class="group"
     :tooltip="tooltip" :duration="duration"
     @click="emit('click')"
   >
