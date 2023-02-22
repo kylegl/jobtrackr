@@ -1,9 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill'
 import type { JobStatusOptions } from '~~/server/trpc/schemas'
 
-export const isDark = useDark()
-export const toggleDark = useToggle(isDark)
-
 export function reduceKeys(keys: Array<any>, initialVal: unknown) {
   return keys.reduce((val, key) => {
     if (Array.isArray(val))

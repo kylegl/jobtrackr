@@ -4,7 +4,7 @@
     flex="~ col" min-h-screen
     bg-base
   >
-    <nav static w-full min-w-3xl max-w-6xl mx-auto p8 />
+    <Nav static w-full min-w-3xl max-w-6xl mx-auto p8 />
     <div w-full min-w-3xl max-w-6xl mx-auto p8 grow>
       <slot />
     </div>
