@@ -27,17 +27,6 @@ body,
 html.dark {
   background: #121212;
 }
-
-ol {
-  list-style-position: inside;
-  list-style-type: decimal;
-}
-
-ul {
-  list-style-position: inside;
-  list-style-type: disc;
-}
-
 @keyframes rotate {
   from {
     transform-origin: center;
