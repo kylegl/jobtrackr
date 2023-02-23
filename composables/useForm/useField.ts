@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
 import { computed, onUnmounted, ref } from 'vue'
-import type { ZodObject } from 'zod'
 import { useEventListener, useFocus } from '@vueuse/core'
 import { useValidator } from './useValidator'
+import { deepEqual } from './utils'
 import type {
   FieldCtx,
   FieldElement,
@@ -10,9 +10,7 @@ import type {
   UseFieldInput,
 } from '~/composables/useForm/types'
 
-export function useField<
-TSchema extends ZodObject<any>,
->(input: UseFieldInput<TSchema>): FieldCtx {
+export function useField(input: UseFieldInput): FieldCtx {
   const { defaultValue, options } = input
 
   const { callback, schema, validate = true } = options.validation
@@ -20,7 +18,7 @@ TSchema extends ZodObject<any>,
   const fieldNode = ref<FieldElement | null>(null)
   const { focused } = useFocus(fieldNode)
   const isTouched = ref(false)
-  const isDirty = computed(() => unref(defaultValue) !== fieldValue.value)
+  const isDirty = computed(() => !deepEqual(unref(defaultValue), fieldValue.value))
 
   // TODO add option to add custom showError event
   const showError = computed(() => isTouched.value)
@@ -88,4 +86,3 @@ TSchema extends ZodObject<any>,
 export function setTouched(isTouched: Ref<boolean>) {
   isTouched.value = true
 }
-

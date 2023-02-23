@@ -1,6 +1,7 @@
 import type { CloneFn, MaybeRef } from '@vueuse/core'
 import type { ComputedRef, Ref, WatchOptions } from 'vue'
 import type { ZodObject, ZodTypeAny } from 'zod'
+export * from './utils/types'
 
 export type KeyOfSchema<T extends ZodObject<any>> = T extends ZodObject<infer O> ? keyof O : never
 export type FieldData<T extends ZodObject<any>> = { [K in KeyOfSchema<T>]: FieldCtx }

@@ -3,7 +3,9 @@ import type { MaybeComputedRef, MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue'
 import { isReactive, isRef, unref } from 'vue'
 import type { ReactiveVariable } from 'vue/macros'
-import type { FieldData, NativeFieldValue, WatchAndCloneOptions } from './types'
+import type { FieldData, NativeFieldValue, WatchAndCloneOptions } from '../types'
+
+import type { Primitive } from './types'
 
 export function hasAny<
   TSchema extends ZodObject<any>,
@@ -74,4 +76,27 @@ export function useClonedAsync<T>(
   })
 
   return { cloned, sync }
+}
+
+export function isNullOrUndefined(value: unknown): value is null | undefined {
+  return value == null
+}
+
+export function isPrimitive(value: unknown): value is Primitive {
+  return isNullOrUndefined(value) || !isObjectType(value)
+}
+
+export function isDateObject(value: unknown): value is Date {
+  return value instanceof Date
+}
+
+export function isObjectType(value: unknown) {
+  return typeof value === 'object'
+}
+
+export function isObject<T extends object>(value: unknown): value is T {
+  return !isNullOrUndefined(value)
+  && !Array.isArray(value)
+  && isObjectType(value)
+  && !isDateObject(value)
 }
