@@ -57,6 +57,7 @@ export interface UseFieldInput {
 
 export interface UseFieldOptions {
   validation: UseValidatorInput
+  setFocus?: () => void
 }
 export interface FormElement extends Partial<HTMLDivElement> {
   value: NativeFieldValue

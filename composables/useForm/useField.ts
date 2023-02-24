@@ -13,10 +13,15 @@ import type {
 export function useField(input: UseFieldInput): FieldCtx {
   const { defaultValue, options } = input
 
+  const {
+    setFocus = useFocus,
+  } = options
+
   const { callback, schema, validate = true } = options.validation
   const fieldValue = ref(unref(defaultValue))
   const fieldNode = ref<FieldElement | null>(null)
-  const { focused } = useFocus(fieldNode)
+  const { focused } = useFieldFocus(fieldNode, useFocusWrapper)
+  // const { focused } = useFocus(fieldNode)
   const isTouched = ref(false)
   const isDirty = computed(() => !deepEqual(unref(defaultValue), fieldValue.value))
 
@@ -47,7 +52,7 @@ export function useField(input: UseFieldInput): FieldCtx {
     return fieldNode
   }
 
-  function setFocus() {
+  function focus() {
     focused.value = true
   }
 
@@ -79,7 +84,7 @@ export function useField(input: UseFieldInput): FieldCtx {
     isValid,
     register,
     reset,
-    setFocus,
+    setFocus: focus,
   }
 }
 

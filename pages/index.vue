@@ -65,6 +65,9 @@ const sortedWos = $ref([])
       </ToolTip>
     </BaseBtn>
 
+    <Editor />
+    <Editor />
+
     <!-- <section>
       <Loading v-if="isLoading" absolute-center />
       <div v-else-if="isError">
