@@ -55,5 +55,15 @@ export function useTipTap(options: UseTipTapOptions) {
     editable: unref(editable),
   })
 
-  return { editor }
+  const textIsLarge = ref(false)
+
+  function focus() {
+    editor.value?.chain().focus()
+  }
+
+  function blur() {
+    editor.value?.chain().blur()
+  }
+
+  return { editor, textIsLarge, blur, focus }
 }

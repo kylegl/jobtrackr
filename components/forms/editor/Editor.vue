@@ -14,8 +14,8 @@ const { placeholder, autofocus, disabled, onFocus, onBlur } = withDefaults(defin
   onBlur: () => { },
 })
 
-const content = ref<JSONContent>()
-const { editor } = useTipTap({
+const { content } = defineModel<{ content: JSONContent | undefined }>()
+const { editor, textIsLarge } = useTipTap({
   content,
   placeholder,
   autofocus,
@@ -34,8 +34,8 @@ watch(editor, () => {
 
 <template>
   <div flex="~ col" b-base rounded-lg>
-    <EditorButtons :editor="editor" b-base-b/>
-    <EditorContent :editor="editor" bg-litDrk-4 rounded-b-lg/>
+    <EditorButtons :editor="editor" :textIsLarge="textIsLarge" b-base-b />
+    <EditorContent :editor="editor" bg-lit-drk-4 rounded-b-lg />
   </div>
 </template>
 

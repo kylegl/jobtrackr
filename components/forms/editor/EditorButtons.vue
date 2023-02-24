@@ -2,7 +2,8 @@
 import type { Level } from '@tiptap/extension-heading'
 import type { Editor } from '@tiptap/vue-3'
 import { InjectionKeyEditorContext } from '~~/constants/symbols'
-const { editor } = defineProps<{ editor: Editor }>()
+const { editor } = defineProps<{ editor: Editor; textIsLarge: boolean }>()
+const { textIsLarge } = defineModel<{ textIsLarge: boolean }>()
 
 provide(InjectionKeyEditorContext, {
   toggleBold: () => editor?.chain().focus().toggleBold().run(),
@@ -11,6 +12,7 @@ provide(InjectionKeyEditorContext, {
   toggleOrderedList: () => editor?.chain().focus().toggleOrderedList().run(),
   toggleHeading: (level: Level) => editor?.chain().focus().toggleHeading({ level }).run(),
   toggleStrike: () => editor?.chain().focus().toggleStrike().run(),
+  textIsLarge,
 })
 </script>
 

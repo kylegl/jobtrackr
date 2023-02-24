@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<{
   type: 'text',
 })
 
-const emit = defineEmits(['update:modelValue', 'update:errorMsg', 'enter', 'focus', 'blur'])
+const emit = defineEmits(['update:model-value', 'update:errorMsg', 'enter', 'focus', 'blur'])
 const input = $ref<HTMLInputElement | null>(null)
 
 const val = $(useVModel(props, 'modelValue', emit, { passive: true, deep: true }))

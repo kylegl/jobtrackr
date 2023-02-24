@@ -7,4 +7,7 @@ export interface EditorCommands {
   toggleOrderedList: () => void
   toggleHeading: (level: Level) => void
   toggleStrike: () => void
+  focus: () => void
+  blur: () => void
+  textIsLarge: Ref<boolean>
 }

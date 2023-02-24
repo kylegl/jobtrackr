@@ -1,15 +1,14 @@
 <script setup lang="ts">
-const { toggleHeading } = useEditorContext() || {}
-const { isLarge } = useTextSize()
+const { toggleHeading, textIsLarge } = useEditorContext() || {}
 
 function toggleH1() {
   toggleHeading?.(3)
-  isLarge.value = true
+  textIsLarge!.value = true
 }
 </script>
 
 <template>
-  <EditorBtn :callback="toggleH1" :isActive="isLarge">
+  <EditorBtn :callback="toggleH1" :isActive="textIsLarge">
     <Icon i-carbon:text-font text-lg />
   </EditorBtn>
 </template>
